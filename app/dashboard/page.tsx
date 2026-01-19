@@ -8,9 +8,17 @@ import type { Product } from '@/types/mock';
 import { StatCard } from '@/components/features/stat-card';
 import { LowStockAlert } from '@/components/features/low-stock-alert';
 import { SalesChart } from '@/components/features/sales-chart';
+import CashierDashboard from '@/components/features/cashier-dashboard';
 
 export default function DashboardPage() {
     const { user } = useAuth();
+
+    // Show cashier-specific dashboard for cashier role
+    if (user?.role === 'cashier') {
+        return <CashierDashboard />;
+    }
+
+    // Owner dashboard below
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
