@@ -376,7 +376,7 @@ export default function LandingPage() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/backend" className="hover:text-white transition">
+                                    <Link href="/docs/schema" className="hover:text-white transition">
                                         Database Schema
                                     </Link>
                                 </li>

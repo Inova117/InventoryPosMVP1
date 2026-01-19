@@ -3,8 +3,8 @@ import path from 'path';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 
-export default function ProductSpecPage() {
-    const filePath = path.join(process.cwd(), 'START_HERE', 'PRODUCT.md');
+export default function DatabaseSchemaPage() {
+    const filePath = path.join(process.cwd(), 'docs', 'DATABASE_SCHEMA.md');
     const content = fs.readFileSync(filePath, 'utf8');
 
     return (
