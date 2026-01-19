@@ -17,9 +17,10 @@ export default function CashierDashboard() {
 
     const loadMySales = async () => {
         try {
-            const allSales = await salesService.getAll();
+            if (!user?.store_id) return;
+            const allSales = await salesService.getSalesByStore(user.store_id);
             // Filter only this cashier's sales
-            const mySales = allSales.filter((sale) => sale.cashier_id === user?.id);
+            const mySales = allSales.filter((sale: Sale) => sale.cashier_id === user?.id);
             setSales(mySales);
         } catch (error) {
             console.error('Error loading sales:', error);
