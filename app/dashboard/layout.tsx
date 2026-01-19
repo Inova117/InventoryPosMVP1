@@ -35,7 +35,7 @@ export default function DashboardLayout({
         { href: '/dashboard', label: 'Overview', icon: '📊', roles: ['owner', 'cashier'] },
         { href: '/dashboard/inventory', label: 'Inventory', icon: '📦', roles: ['owner'] },
         { href: '/dashboard/pos', label: 'POS', icon: '💰', roles: ['owner', 'cashier'] },
-        { href: '/dashboard/sales', label: 'Sales', icon: '📈', roles: ['owner'] },
+        { href: '/dashboard/sales', label: 'Sales', icon: '📈', roles: ['owner', 'cashier'] },
     ];
 
     const visibleNavItems = navItems.filter((item) =>

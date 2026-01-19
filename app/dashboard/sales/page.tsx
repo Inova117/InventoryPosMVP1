@@ -1,10 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
 import type { Sale, SaleItem } from '@/types/mock';
+import CashierSalesPage from '@/components/features/cashier-sales';
 
 export default function SalesPage() {
+    const { user } = useAuth();
+
+    // Show cashier-specific sales page
+    if (user?.role === 'cashier') {
+        return <CashierSalesPage />;
+    }
+
+    // Owner sales page below
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
 
