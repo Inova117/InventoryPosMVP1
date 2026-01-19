@@ -65,8 +65,8 @@ export default function LandingPage() {
             {/* Navigation */}
             <nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                        ? 'bg-slate-900/95 backdrop-blur-lg border-b border-slate-700/50'
-                        : 'bg-transparent'
+                    ? 'bg-slate-900/95 backdrop-blur-lg border-b border-slate-700/50'
+                    : 'bg-transparent'
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 py-4">
@@ -371,22 +371,29 @@ export default function LandingPage() {
                             <h4 className="text-white font-semibold mb-4">Documentation</h4>
                             <ul className="space-y-2 text-slate-400 text-sm">
                                 <li>
-                                    <span className="hover:text-white transition cursor-pointer">API Spec</span>
+                                    <Link href="/docs/api" className="hover:text-white transition">
+                                        API Spec
+                                    </Link>
                                 </li>
                                 <li>
-                                    <span className="hover:text-white transition cursor-pointer">
+                                    <Link href="/backend" className="hover:text-white transition">
                                         Database Schema
-                                    </span>
+                                    </Link>
                                 </li>
                                 <li>
-                                    <span className="hover:text-white transition cursor-pointer">
+                                    <Link href="/docs/product" className="hover:text-white transition">
                                         Product Spec
-                                    </span>
+                                    </Link>
                                 </li>
                                 <li>
-                                    <span className="hover:text-white transition cursor-pointer">
-                                        Code Quality Report
-                                    </span>
+                                    <a
+                                        href="https://github.com/Inova117/InventoryPosMVP1"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:text-white transition"
+                                    >
+                                        GitHub Repository
+                                    </a>
                                 </li>
                             </ul>
                         </div>
