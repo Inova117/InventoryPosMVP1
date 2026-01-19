@@ -128,15 +128,15 @@ export default function BackendPage() {
                                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                                     <h3 className="font-semibold text-blue-900 mb-2">📚 Documentation</h3>
                                     <div className="flex gap-4 text-sm">
-                                        <a href="/docs/DATABASE_SCHEMA.md" className="text-blue-700 hover:underline">
+                                        <Link href="/docs/schema" className="text-blue-700 hover:underline">
                                             Database Schema
-                                        </a>
-                                        <a href="/docs/API_SPEC.md" className="text-blue-700 hover:underline">
+                                        </Link>
+                                        <Link href="/docs/api" className="text-blue-700 hover:underline">
                                             API Specification
-                                        </a>
-                                        <a href="/START_HERE/PRODUCT.md" className="text-blue-700 hover:underline">
+                                        </Link>
+                                        <Link href="/docs/product" className="text-blue-700 hover:underline">
                                             Product Spec
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
