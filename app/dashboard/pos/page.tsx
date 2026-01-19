@@ -117,6 +117,33 @@ export default function POSPage() {
                     </div>
                 )}
 
+                {/* Quick Actions Bar */}
+                {cartItems.length > 0 && (
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">⚡ Quick:</span>
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Clear all items from cart?')) {
+                                            cart.clear();
+                                            setCartItems([]);
+                                        }
+                                    }}
+                                    className="px-2 py-1 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded text-xs font-medium hover:bg-red-200 dark:hover:bg-red-900 transition"
+                                >
+                                    🗑️ Clear Cart
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+                                <span>Items:</span>
+                                <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">{cartItems.length}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[calc(100vh-16rem)] overflow-y-auto">
                     {filteredProducts.map((product) => (
                         <button
