@@ -32,7 +32,7 @@ export default function DashboardLayout({
     if (!user) return null;
 
     const navItems = [
-        { href: '/dashboard', label: 'Overview', icon: '📊', roles: ['owner'] },
+        { href: '/dashboard', label: 'Overview', icon: '📊', roles: ['owner', 'cashier'] },
         { href: '/dashboard/inventory', label: 'Inventory', icon: '📦', roles: ['owner'] },
         { href: '/dashboard/pos', label: 'POS', icon: '💰', roles: ['owner', 'cashier'] },
         { href: '/dashboard/sales', label: 'Sales', icon: '📈', roles: ['owner'] },
