@@ -19,6 +19,7 @@ export default function POSPage() {
     const [cartItems, setCartItems] = useState(cart.getItems());
     const [showCheckout, setShowCheckout] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [kioskMode, setKioskMode] = useState(false);
 
     const loadProducts = useCallback(async () => {
         if (!user?.store_id) return;
@@ -95,6 +96,111 @@ export default function POSPage() {
         setTimeout(() => setSuccessMessage(''), 3000);
     };
 
+    // Kiosk Mode - Fullscreen POS only
+    if (kioskMode) {
+        return (
+            <div className="fixed inset-0 bg-slate-50 dark:bg-slate-950 z-50 overflow-auto">
+                <div className="p-4 space-y-4">
+                    {/* Kiosk Header */}
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                                💰 Point of Sale
+                            </div>
+                            <div className="px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
+                                Kiosk Mode
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setKioskMode(false)}
+                            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition font-medium"
+                        >
+                            ← Exit Kiosk Mode
+                        </button>
+                    </div>
+
+                    {successMessage && (
+                        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-green-800 dark:text-green-400 font-medium text-center">
+                            ✓ {successMessage}
+                        </div>
+                    )}
+
+                    <div className="grid lg:grid-cols-2 gap-4">
+                        {/* Products */}
+                        <div className="space-y-4">
+                            <Input
+                                type="search"
+                                placeholder="Search products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="text-lg h-14"
+                            />
+                            <div className="grid grid-cols-2 gap-3 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                                {filteredProducts.map((product) => (
+                                    <button
+                                        key={product.id}
+                                        onClick={() => handleAddToCart(product)}
+                                        className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 text-left hover:border-blue-500 dark:hover:border-blue-400 transition-all hover:shadow-lg"
+                                    >
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">
+                                            {product.name}
+                                        </h3>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                            Stock: {product.stock}
+                                        </p>
+                                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                                            ${product.sell_price.toFixed(2)}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Cart */}
+                        <div className="space-y-4">
+                            <CartDisplay
+                                items={cartItems}
+                                onUpdateQuantity={handleUpdateQuantity}
+                                onRemoveItem={handleRemoveItem}
+                            />
+                            {cartItems.length > 0 && (
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={() => {
+                                            if (confirm('Clear cart?')) {
+                                                cart.clear();
+                                                setCartItems([]);
+                                            }
+                                        }}
+                                        className="w-full px-4 py-3 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition font-medium"
+                                    >
+                                        🗑️ Clear Cart
+                                    </button>
+                                    <Button
+                                        onClick={() => setShowCheckout(true)}
+                                        className="w-full h-16 text-xl"
+                                        size="lg"
+                                    >
+                                        Checkout ${cart.getTotal().toFixed(2)}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {showCheckout && (
+                        <CheckoutModal
+                            total={cart.getTotal()}
+                            onComplete={handleCheckout}
+                            onCancel={() => setShowCheckout(false)}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Normal Mode
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
@@ -133,6 +239,12 @@ export default function POSPage() {
                                     className="px-2 py-1 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded text-xs font-medium hover:bg-red-200 dark:hover:bg-red-900 transition"
                                 >
                                     🗑️ Clear Cart
+                                </button>
+                                <button
+                                    onClick={() => setKioskMode(true)}
+                                    className="px-2 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded text-xs font-medium hover:bg-purple-200 dark:hover:bg-purple-900 transition"
+                                >
+                                    📱 Kiosk Mode
                                 </button>
                             </div>
                             <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
