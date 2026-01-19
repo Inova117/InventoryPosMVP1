@@ -61,7 +61,7 @@ export default function DashboardLayout({
             <div className="flex">
                 <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 min-h-[calc(100vh-4rem)]">
                     <nav className="p-4 space-y-1">
-                        {navItems.map((item) => {
+                        {visibleNavItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
                                 <Link
