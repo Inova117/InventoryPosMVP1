@@ -47,8 +47,8 @@ export function DatabaseControls() {
 
                 {message && (
                     <div className={`p-3 rounded mb-4 ${message.includes('✅')
-                            ? 'bg-green-100 text-green-800 border border-green-200'
-                            : 'bg-red-100 text-red-800 border border-red-200'
+                        ? 'bg-green-100 text-green-800 border border-green-200'
+                        : 'bg-red-100 text-red-800 border border-red-200'
                         }`}>
                         {message}
                     </div>
@@ -69,7 +69,7 @@ export function DatabaseControls() {
                     Open browser DevTools (F12) → Console → Run:
                 </p>
                 <code className="block bg-slate-900 text-green-400 p-2 rounded text-xs font-mono">
-                    localStorage.removeItem('mvp_inventory_pos_db_v1'); location.reload();
+                    localStorage.removeItem(&apos;mvp_inventory_pos_db_v1&apos;); location.reload();
                 </code>
             </div>
         </div>

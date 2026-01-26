@@ -13,12 +13,7 @@ import CashierDashboard from '@/components/features/cashier-dashboard';
 export default function DashboardPage() {
     const { user } = useAuth();
 
-    // Show cashier-specific dashboard for cashier role
-    if (user?.role === 'cashier') {
-        return <CashierDashboard />;
-    }
-
-    // Owner dashboard below
+    // All hooks must be at the top level
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
@@ -53,6 +48,11 @@ export default function DashboardPage() {
             loadDashboardData();
         }
     }, [user, loadDashboardData]);
+
+    // Show cashier-specific dashboard for cashier role
+    if (user?.role === 'cashier') {
+        return <CashierDashboard />;
+    }
 
     if (isLoading || !stats) {
         return (

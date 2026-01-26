@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export function LiveDataInspector() {
     const [activeTable, setActiveTable] = useState<string>('products');
-    const [mockData, setMockData] = useState<any>(null);
+    const [mockData, setMockData] = useState<Record<string, unknown> | null>(null);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -54,8 +54,8 @@ export function LiveDataInspector() {
                                 key={table.name}
                                 onClick={() => setActiveTable(table.name)}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTable === table.name
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                                     }`}
                             >
                                 <span className="mr-2">{table.icon}</span>
@@ -72,7 +72,7 @@ export function LiveDataInspector() {
                             </h3>
                             <span className="text-slate-400 text-xs">
                                 {/* eslint-disable-next-line security/detect-object-injection */}
-                                {mockData[activeTable]?.length || 0} records
+                                {Array.isArray(mockData[activeTable]) ? mockData[activeTable].length : 0} records
                             </span>
                         </div>
                         <pre className="text-green-400 text-xs font-mono overflow-x-auto">

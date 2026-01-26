@@ -86,7 +86,7 @@ export default function CashierDashboard() {
                 {/* Today's Sales Count */}
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 text-white">
                     <div className="flex items-center justify-between mb-2">
-                        <div className="text-blue-100 text-sm font-medium">Today's Sales</div>
+                        <div className="text-blue-100 text-sm font-medium">Today&apos;s Sales</div>
                         <div className="text-3xl">💰</div>
                     </div>
                     <div className="text-3xl font-bold">{todayCount}</div>

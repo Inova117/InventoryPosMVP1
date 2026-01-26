@@ -6,7 +6,6 @@ import { MockDatabaseOverview } from '@/components/backend/mock-database-overvie
 import { DataFlowDiagram } from '@/components/backend/data-flow-diagram'
 import { LiveDataInspector } from '@/components/backend/live-data-inspector'
 import { DatabaseSchema } from '@/components/backend/database-schema'
-import { DatabaseControls } from '@/components/backend/database-controls'
 import Link from 'next/link'
 
 export default function BackendPage() {

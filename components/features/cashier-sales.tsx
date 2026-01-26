@@ -49,17 +49,6 @@ export default function CashierSalesPage() {
     const totalRevenue = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
     const averageSale = filteredSales.length > 0 ? totalRevenue / filteredSales.length : 0;
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
-
     const formatTime = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleTimeString('en-US', {
@@ -97,8 +86,8 @@ export default function CashierSalesPage() {
                     <button
                         onClick={() => setFilter('today')}
                         className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'today'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
                             }`}
                     >
                         Today
@@ -106,8 +95,8 @@ export default function CashierSalesPage() {
                     <button
                         onClick={() => setFilter('week')}
                         className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'week'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
                             }`}
                     >
                         This Week
@@ -115,8 +104,8 @@ export default function CashierSalesPage() {
                     <button
                         onClick={() => setFilter('all')}
                         className={`px-4 py-2 rounded-lg font-medium transition ${filter === 'all'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
                             }`}
                     >
                         All Time

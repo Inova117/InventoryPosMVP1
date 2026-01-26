@@ -3,18 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
-import type { Sale, SaleItem } from '@/types/mock';
+import type { Sale } from '@/types/mock';
 import CashierSalesPage from '@/components/features/cashier-sales';
 
 export default function SalesPage() {
     const { user } = useAuth();
 
-    // Show cashier-specific sales page
-    if (user?.role === 'cashier') {
-        return <CashierSalesPage />;
-    }
-
-    // Owner sales page below
+    // All hooks must be at the top level
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -22,9 +17,16 @@ export default function SalesPage() {
         loadSales();
     }, []);
 
+    // Show cashier-specific sales page
+    if (user?.role === 'cashier') {
+        return <CashierSalesPage />;
+    }
+
     const loadSales = async () => {
+        if (!user?.store_id) return;
+
         try {
-            const data = await salesService.getAll();
+            const data = await salesService.getSalesByStore(user.store_id);
             setSales(data);
         } catch (error) {
             console.error('Error loading sales:', error);
@@ -33,16 +35,7 @@ export default function SalesPage() {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
+
 
     if (loading) {
         return (
@@ -131,7 +124,13 @@ export default function SalesPage() {
                                 {sales.map((sale) => (
                                     <tr key={sale.id} className="hover:bg-slate-50 transition">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                                            {formatDate(sale.created_at)}
+                                            {new Date(sale.created_at).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">
                                             {sale.id.substring(0, 8)}...
