@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
-import CashierSalesPage from '@/components/features/cashier-sales';
+import dynamic from 'next/dynamic';
+
+const CashierSalesPage = dynamic(() => import('@/components/features/cashier-sales'), {
+    loading: () => <div className="p-8"><div className="animate-pulse h-32 bg-slate-200 rounded"></div></div>
+});
 
 export default function SalesPage() {
     const { user } = useAuth();
