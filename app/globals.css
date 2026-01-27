@@ -2,6 +2,221 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import warm, editorial fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    /* Warm, human-centered color palette */
+    --sage-primary: 123 137 111;
+    /* #7B896F - Sage Green */
+    --sage-light: 155 167 143;
+    /* Lighter sage */
+    --sage-dark: 98 110 88;
+    /* Darker sage */
+
+    /* Warm neutrals instead of cold grays */
+    --warmth-50: 251 249 246;
+    /* Off-white with warmth */
+    --warmth-100: 245 241 236;
+    --warmth-200: 233 227 217;
+    --warmth-300: 212 204 191;
+    --warmth-400: 180 169 152;
+    --warmth-500: 148 135 115;
+    --warmth-600: 116 102 84;
+    --warmth-700: 91 79 64;
+    --warmth-800: 66 56 44;
+    --warmth-900: 41 34 26;
+
+    /* Soft accents */
+    --terracotta: 209 134 107;
+    /* Warm orange-red */
+    --cream: 255 250 240;
+    --soft-blue: 163 187 203;
+
+    /* Design tokens */
+    --background: var(--warmth-50);
+    --foreground: var(--warmth-900);
+    --card: 255 255 255;
+    --card-foreground: var(--warmth-900);
+    --primary: var(--sage-primary);
+    --primary-foreground: 255 255 255;
+    --secondary: var(--warmth-200);
+    --secondary-foreground: var(--warmth-900);
+    --muted: var(--warmth-100);
+    --muted-foreground: var(--warmth-600);
+    --accent: var(--sage-primary);
+    --accent-foreground: 255 255 255;
+    --border: var(--warmth-200);
+    --input: var(--warmth-200);
+    --ring: var(--sage-primary);
+    --radius: 16px;
+    /* More rounded for warmth */
+  }
+
+  .dark {
+    --background: 28 25 23;
+    /* Warm dark */
+    --foreground: var(--warmth-100);
+    --card: 38 35 32;
+    --card-foreground: var(--warmth-100);
+    --primary: var(--sage-light);
+    --primary-foreground: var(--warmth-900);
+    --secondary: 48 44 40;
+    --secondary-foreground: var(--warmth-100);
+    --muted: 44 40 36;
+    --muted-foreground: var(--warmth-400);
+    --accent: var(--sage-light);
+    --accent-foreground: var(--warmth-900);
+    --border: 54 49 44;
+    --input: 54 49 44;
+    --ring: var(--sage-light);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Smooth, satisfying transitions */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+}
+
+@layer utilities {
+
+  /* Elevation system for depth */
+  .elevation-1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .elevation-2 {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .elevation-3 {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  .elevation-4 {
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.06), 0 10px 10px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Smooth hover effects */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1 elevation-3;
+  }
+
+  /* Tactile button effect */
+  .button-tactile {
+    @apply transition-all duration-150;
+  }
+
+  .button-tactile:active {
+    @apply scale-[0.98];
+  }
+
+  /* Warm glow effect */
+  .warm-glow {
+    box-shadow: 0 0 20px rgba(123, 137, 111, 0.15);
+  }
+
+  /* Generous spacing */
+  .section-spacing {
+    @apply py-8 md:py-12;
+  }
+
+  .card-spacing {
+    @apply p-6 md:p-8;
+  }
+
+  /* Touch-friendly sizing */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Smooth animations */
+  @keyframes gentle-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gentle-scale {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: gentle-fade-in 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: gentle-scale 0.3s ease-out;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgb(var(--warmth-100));
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(var(--sage-primary) / 0.3);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--sage-primary) / 0.5);
+  }
+}
+
 @layer base {
   :root {
     /* Light mode */
@@ -26,6 +241,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
   }

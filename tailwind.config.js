@@ -8,50 +8,103 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+        // Sage green primary accent
+        sage: {
+          50: '#f5f7f4',
+          100: '#e8ebe5',
+          200: '#d1d7cb',
+          300: '#b2bbaa',
+          400: '#939f87',
+          500: '#7B896F', // Main sage green
+          600: '#656f5d',
+          700: '#4f574b',
+          800: '#3f443b',
+          900: '#2f332c',
         },
-        secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
+        // Warm neutrals (replacing cold grays)
+        warmth: {
+          50: '#fbf9f6',
+          100: '#f5f1ec',
+          200: '#e9e3d9',
+          300: '#d4ccbf',
+          400: '#b4a998',
+          500: '#948773',
+          600: '#746654',
+          700: '#5b4f40',
+          800: '#42382c',
+          900: '#29221a',
         },
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        border: 'hsl(var(--border))',
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+        // Soft accents
+        terracotta: {
+          DEFAULT: '#d1866b',
+          light: '#e5a890',
+          dark: '#b86d54',
         },
+        cream: '#fffaf0',
+        'soft-blue': '#a3bbcb',
+
+        // Design tokens
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)',
+        'card-foreground': 'rgb(var(--card-foreground) / <alpha-value>)',
+        primary: 'rgb(var(--primary) / <alpha-value>)',
+        'primary-foreground': 'rgb(var(--primary-foreground) / <alpha-value>)',
+        secondary: 'rgb(var(--secondary) / <alpha-value>)',
+        'secondary-foreground': 'rgb(var(--secondary-foreground) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+        'muted-foreground': 'rgb(var(--muted-foreground) / <alpha-value>)',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        'accent-foreground': 'rgb(var(--accent-foreground) / <alpha-value>)',
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Outfit', 'system-ui', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        serif: ['Crimson Pro', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 4px)',
+        sm: 'calc(var(--radius) - 8px)',
+      },
+      spacing: {
+        // Generous touch-friendly spacing
+        'touch': '44px',
+        'card': '1.5rem',
+        'section': '3rem',
+      },
       boxShadow: {
-        'primary': '0 10px 25px -5px rgb(14 165 233 / 0.3)',
-        'secondary': '0 10px 25px -5px rgb(217 70 239 / 0.3)',
+        'warm': '0 2px 8px rgba(123, 137, 111, 0.08)',
+        'warm-lg': '0 8px 24px rgba(123, 137, 111, 0.12)',
+        'warm-xl': '0 12px 40px rgba(123, 137, 111, 0.16)',
+      },
+      animation: {
+        'fade-in': 'gentle-fade-in 0.4s ease-out',
+        'scale-in': 'gentle-scale 0.3s ease-out',
+        'slide-up': 'slide-up 0.3s ease-out',
+      },
+      keyframes: {
+        'gentle-fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'gentle-scale': {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'slide-up': {
+          '0%': { transform: 'translateY(16px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
       },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    require('@tailwindcss/forms')({
+      strategy: 'class',
+    }),
   ],
 }
