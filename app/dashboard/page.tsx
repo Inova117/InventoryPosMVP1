@@ -8,7 +8,11 @@ import type { Product } from '@/types/mock';
 import { StatCard } from '@/components/features/stat-card';
 import { LowStockAlert } from '@/components/features/low-stock-alert';
 import { SalesChart } from '@/components/features/sales-chart';
-import CashierDashboard from '@/components/features/cashier-dashboard';
+import dynamic from 'next/dynamic';
+
+const CashierDashboard = dynamic(() => import('@/components/features/cashier-dashboard'), {
+    loading: () => <div className="p-8"><div className="animate-pulse h-32 bg-slate-200 rounded"></div></div>
+});
 
 export default function DashboardPage() {
     const { user } = useAuth();
