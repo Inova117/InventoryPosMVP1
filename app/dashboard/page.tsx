@@ -5,13 +5,11 @@ import { useAuth } from '@/hooks/use-auth';
 import { analyticsService } from '@/lib/services/analytics';
 import type { DashboardStats, TopProduct, DailySalesData } from '@/lib/services/analytics';
 import type { Product } from '@/types/mock';
-import { StatCard } from '@/components/features/stat-card';
-import { LowStockAlert } from '@/components/features/low-stock-alert';
 import { SalesChart } from '@/components/features/sales-chart';
 import dynamic from 'next/dynamic';
 
 const CashierDashboard = dynamic(() => import('@/components/features/cashier-dashboard'), {
-    loading: () => <div className="p-8"><div className="animate-pulse h-32 bg-slate-200 rounded"></div></div>
+    loading: () => <div className="p-8"><div className="animate-pulse h-32 bg-warmth-200 rounded-2xl"></div></div>
 });
 
 export default function DashboardPage() {
@@ -60,85 +58,165 @@ export default function DashboardPage() {
 
     if (isLoading || !stats) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-slate-100"></div>
+            <div className="flex items-center justify-center section-spacing">
+                <div className="animate-spin rounded-full h-10 w-10 border-2 border-sage-500 border-t-transparent"></div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                    Dashboard Overview
+        <div className="space-y-8 animate-fade-in custom-scrollbar max-w-7xl">
+            {/* Warm Welcome Header */}
+            <div className="space-y-2">
+                <h1 className="text-4xl md:text-5xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                    Welcome back, {user?.full_name?.split(' ')[0]}
                 </h1>
-                <p className="text-slate-500 dark:text-slate-400">
-                    Welcome back, {user?.full_name}
+                <p className="text-lg text-warmth-600 dark:text-warmth-400">
+                    Here's what's happening with your store today
                 </p>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard
-                    title="Today's Revenue"
-                    value={`$${stats.todayRevenue.toFixed(2)}`}
-                    icon="💰"
-                />
-                <StatCard
-                    title="Today's Sales"
-                    value={stats.todaySales}
-                    icon="📊"
-                />
-                <StatCard
-                    title="Total Products"
-                    value={stats.totalProducts}
-                    icon="📦"
-                />
-                <StatCard
-                    title="Stock Value"
-                    value={`$${stats.totalStockValue.toFixed(2)}`}
-                    icon="💎"
-                />
+            {/* Stats Grid with warm cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="group bg-white dark:bg-warmth-800 rounded-2xl p-6 elevation-2 hover-lift border border-warmth-200 dark:border-warmth-700">
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="text-3xl">💰</div>
+                        <div className="px-2.5 py-1 bg-sage-100 dark:bg-sage-900/30 text-sage-700 dark:text-sage-400 rounded-full text-xs font-medium">
+                            Today
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Revenue</p>
+                        <p className="text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                            ${stats.todayRevenue.toFixed(2)}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="group bg-white dark:bg-warmth-800 rounded-2xl p-6 elevation-2 hover-lift border border-warmth-200 dark:border-warmth-700">
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="text-3xl">📊</div>
+                        <div className="px-2.5 py-1 bg-terracotta/10 dark:bg-terracotta/20 text-terracotta-dark dark:text-terracotta-light rounded-full text-xs font-medium">
+                            Sales
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Today's Orders</p>
+                        <p className="text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                            {stats.todaySales}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="group bg-white dark:bg-warmth-800 rounded-2xl p-6 elevation-2 hover-lift border border-warmth-200 dark:border-warmth-700">
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="text-3xl">📦</div>
+                        {stats.lowStockCount > 0 && (
+                            <div className="px-2.5 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-medium">
+                                {stats.lowStockCount} low
+                            </div>
+                        )}
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Products</p>
+                        <p className="text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                            {stats.totalProducts}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="group bg-white dark:bg-warmth-800 rounded-2xl p-6 elevation-2 hover-lift border border-warmth-200 dark:border-warmth-700">
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="text-3xl">💎</div>
+                        <div className="px-2.5 py-1 bg-soft-blue/20 dark:bg-soft-blue/10 text-soft-blue dark:text-soft-blue rounded-full text-xs font-medium">
+                            Total
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Stock Value</p>
+                        <p className="text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                            ${stats.totalStockValue.toFixed(2)}
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            {/* Low Stock Alert */}
-            <LowStockAlert products={lowStockProducts} />
+            {/* Low Stock Alert with warm styling */}
+            {lowStockProducts.length > 0 && (
+                <div className="bg-gradient-to-br from-orange-50 to-warmth-50 dark:from-orange-950/20 dark:to-warmth-900 rounded-2xl p-6 md:p-8 border border-orange-200 dark:border-orange-900/30 elevation-2">
+                    <div className="flex items-start gap-4">
+                        <div className="text-3xl md:text-4xl">⚠️</div>
+                        <div className="flex-1">
+                            <h3 className="text-xl md:text-2xl font-serif font-semibold text-warmth-900 dark:text-warmth-50 mb-2">
+                                Low Stock Alert
+                            </h3>
+                            <p className="text-sm md:text-base text-warmth-600 dark:text-warmth-400 mb-4">
+                                {lowStockProducts.length} {lowStockProducts.length === 1 ? 'product needs' : 'products need'} attention
+                            </p>
+                            <div className="space-y-2">
+                                {lowStockProducts.slice(0, 3).map((product) => (
+                                    <div key={product.id} className="flex items-center justify-between py-3 px-4 bg-white/60 dark:bg-warmth-800/60 rounded-xl hover-lift">
+                                        <div>
+                                            <p className="font-medium text-warmth-900 dark:text-warmth-100">{product.name}</p>
+                                            <p className="text-sm text-warmth-600 dark:text-warmth-400">{product.sku}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                                {product.stock} left
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-            {/* Sales Chart */}
-            {salesData.length > 0 && <SalesChart data={salesData} />}
-
-            {/* Top Products */}
-            {topProducts.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                        Top Selling Products
+            {/* Sales Chart with warm styling */}
+            {salesData.length > 0 && (
+                <div className="bg-white dark:bg-warmth-800 rounded-2xl p-6 md:p-8 elevation-2 border border-warmth-200 dark:border-warmth-700">
+                    <h2 className="text-2xl md:text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50 mb-6">
+                        Sales Trend
                     </h2>
-                    <div className="space-y-3">
+                    <SalesChart data={salesData} />
+                </div>
+            )}
+
+            {/* Top Products with card-style layout */}
+            {topProducts.length > 0 && (
+                <div className="bg-white dark:bg-warmth-800 rounded-2xl p-6 md:p-8 elevation-2 border border-warmth-200 dark:border-warmth-700">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl md:text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
+                            Top Performers
+                        </h2>
+                        <div className="text-3xl">🏆</div>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {topProducts.map((item, index) => (
                             <div
                                 key={item.product.id}
-                                className="flex items-center justify-between py-3 border-b border-slate-200 dark:border-slate-700 last:border-0"
+                                className="group p-5 bg-warmth-50 dark:bg-warmth-900 rounded-xl hover-lift border border-warmth-200 dark:border-warmth-700"
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className="text-2xl font-bold text-slate-400">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="text-2xl font-serif font-bold text-sage-600 dark:text-sage-400">
                                         #{index + 1}
-                                    </span>
-                                    <div>
-                                        <h3 className="font-medium text-slate-900 dark:text-slate-100">
-                                            {item.product.name}
-                                        </h3>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                                            {item.totalSold} units sold
-                                        </p>
+                                    </div>
+                                    <div className="px-2.5 py-1 bg-sage-100 dark:bg-sage-900/30 text-sage-700 dark:text-sage-400 rounded-full text-xs font-medium">
+                                        {item.totalSold} sold
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                <h3 className="font-semibold text-warmth-900 dark:text-warmth-100 mb-1">
+                                    {item.product.name}
+                                </h3>
+                                <p className="text-sm text-warmth-600 dark:text-warmth-400 mb-3">
+                                    {item.product.category}
+                                </p>
+                                <div className="flex items-center justify-between pt-3 border-t border-warmth-200 dark:border-warmth-700">
+                                    <span className="text-sm text-warmth-600 dark:text-warmth-400">Revenue</span>
+                                    <span className="font-serif font-semibold text-warmth-900 dark:text-warmth-50">
                                         ${item.revenue.toFixed(2)}
-                                    </p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                                        revenue
-                                    </p>
+                                    </span>
                                 </div>
                             </div>
                         ))}
@@ -146,46 +224,34 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* Quick Actions */}
-            <div className="grid gap-4 md:grid-cols-3">
-                <a
-                    href="/dashboard/inventory"
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-slate-900 dark:hover:border-slate-100 transition-colors"
-                >
-                    <div className="text-3xl mb-2">📦</div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                        Manage Inventory
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Add, edit, or remove products
-                    </p>
-                </a>
-
-                <a
-                    href="/dashboard/pos"
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-slate-900 dark:hover:border-slate-100 transition-colors"
-                >
-                    <div className="text-3xl mb-2">💰</div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                        Point of Sale
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Process new sales transactions
-                    </p>
-                </a>
-
-                <a
-                    href="/backend"
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-slate-900 dark:hover:border-slate-100 transition-colors"
-                >
-                    <div className="text-3xl mb-2">🔧</div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                        Backend & Architecture
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        View mock database and system design
-                    </p>
-                </a>
+            {/* Quick Actions - Touch-friendly */}
+            <div className="bg-gradient-to-br from-sage-50 to-warmth-50 dark:from-sage-950/20 dark:to-warmth-900 rounded-2xl p-6 md:p-8 border border-sage-200 dark:border-sage-900/30 elevation-2">
+                <h3 className="text-xl md:text-2xl font-serif font-semibold text-warmth-900 dark:text-warmth-50 mb-4">
+                    Quick Actions
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <a
+                        href="/dashboard/pos"
+                        className="group touch-target flex items-center gap-3 px-6 py-4 bg-sage-500 hover:bg-sage-600 text-white rounded-xl button-tactile elevation-2 hover:elevation-3 hover:warm-glow"
+                    >
+                        <span className="text-2xl">💰</span>
+                        <span className="font-medium">New Sale</span>
+                    </a>
+                    <a
+                        href="/dashboard/inventory"
+                        className="group touch-target flex items-center gap-3 px-6 py-4 bg-white dark:bg-warmth-800 hover:bg-warmth-50 dark:hover:bg-warmth-700 text-warmth-900 dark:text-warmth-100 rounded-xl button-tactile elevation-2 hover:elevation-3 border border-warmth-200 dark:border-warmth-700"
+                    >
+                        <span className="text-2xl">📦</span>
+                        <span className="font-medium">Manage Inventory</span>
+                    </a>
+                    <a
+                        href="/dashboard/sales"
+                        className="group touch-target flex items-center gap-3 px-6 py-4 bg-white dark:bg-warmth-800 hover:bg-warmth-50 dark:hover:bg-warmth-700 text-warmth-900 dark:text-warmth-100 rounded-xl button-tactile elevation-2 hover:elevation-3 border border-warmth-200 dark:border-warmth-700"
+                    >
+                        <span className="text-2xl">📊</span>
+                        <span className="font-medium">View Sales</span>
+                    </a>
+                </div>
             </div>
         </div>
     );
