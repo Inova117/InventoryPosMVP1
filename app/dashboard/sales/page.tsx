@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
@@ -17,16 +17,7 @@ export default function SalesPage() {
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadSales();
-    }, []);
-
-    // Show cashier-specific sales page
-    if (user?.role === 'cashier') {
-        return <CashierSalesPage />;
-    }
-
-    const loadSales = async () => {
+    const loadSales = useCallback(async () => {
         if (!user?.store_id) return;
 
         try {
@@ -37,7 +28,16 @@ export default function SalesPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.store_id]);
+
+    useEffect(() => {
+        loadSales();
+    }, [loadSales]);
+
+    // Show cashier-specific sales page
+    if (user?.role === 'cashier') {
+        return <CashierSalesPage />;
+    }
 
 
 

@@ -72,7 +72,7 @@ export default function DashboardPage() {
                     Welcome back, {user?.full_name?.split(' ')[0]}
                 </h1>
                 <p className="text-lg text-warmth-600 dark:text-warmth-400">
-                    Here's what's happening with your store today
+                    Here&apos;s what&apos;s happening with your store today
                 </p>
             </div>
 
@@ -101,7 +101,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Today's Orders</p>
+                        <p className="text-sm font-medium text-warmth-600 dark:text-warmth-400">Today&apos;s Orders</p>
                         <p className="text-3xl font-serif font-semibold text-warmth-900 dark:text-warmth-50">
                             {stats.todaySales}
                         </p>

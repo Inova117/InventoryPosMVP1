@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({
     children,
@@ -86,8 +85,8 @@ export default function DashboardLayout({
                                     key={item.href}
                                     href={item.href}
                                     className={`group flex items-center gap-4 px-5 py-4 rounded-2xl font-medium transition-all touch-target ${isActive
-                                            ? 'bg-sage-500 text-white elevation-2 scale-[1.02]'
-                                            : 'text-warmth-700 hover:bg-warmth-50 dark:text-warmth-300 dark:hover:bg-warmth-700 hover-lift'
+                                        ? 'bg-sage-500 text-white elevation-2 scale-[1.02]'
+                                        : 'text-warmth-700 hover:bg-warmth-50 dark:text-warmth-300 dark:hover:bg-warmth-700 hover-lift'
                                         }`}
                                 >
                                     <span className="text-2xl">{item.icon}</span>
@@ -123,8 +122,8 @@ export default function DashboardLayout({
                                     key={item.href}
                                     href={item.href}
                                     className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all touch-target ${isActive
-                                            ? 'bg-sage-100 dark:bg-sage-900/30 text-sage-700 dark:text-sage-400'
-                                            : 'text-warmth-600 dark:text-warmth-400'
+                                        ? 'bg-sage-100 dark:bg-sage-900/30 text-sage-700 dark:text-sage-400'
+                                        : 'text-warmth-600 dark:text-warmth-400'
                                         }`}
                                 >
                                     <span className="text-xl">{item.icon}</span>

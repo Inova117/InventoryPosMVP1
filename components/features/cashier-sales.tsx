@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
@@ -11,11 +11,7 @@ export default function CashierSalesPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'today' | 'week'>('all');
 
-    useEffect(() => {
-        loadMySales();
-    }, []);
-
-    const loadMySales = async () => {
+    const loadMySales = useCallback(async () => {
         try {
             if (!user?.store_id) return;
             const allSales = await salesService.getSalesByStore(user.store_id);
@@ -27,7 +23,11 @@ export default function CashierSalesPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.store_id, user?.id]);
+
+    useEffect(() => {
+        loadMySales();
+    }, [loadMySales]);
 
     // Filter sales based on selected period
     const getFilteredSales = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
@@ -11,11 +11,7 @@ export default function CashierDashboard() {
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadMySales();
-    }, []);
-
-    const loadMySales = async () => {
+    const loadMySales = useCallback(async () => {
         try {
             if (!user?.store_id) return;
             const allSales = await salesService.getSalesByStore(user.store_id);
@@ -27,7 +23,11 @@ export default function CashierDashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.store_id, user?.id]);
+
+    useEffect(() => {
+        loadMySales();
+    }, [loadMySales]);
 
     // Calculate today's sales
     const today = new Date().toDateString();
