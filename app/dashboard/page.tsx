@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 <div className="group bg-white dark:bg-warmth-800 rounded-2xl p-6 elevation-2 hover-lift border border-warmth-200 dark:border-warmth-700">
                     <div className="flex items-start justify-between mb-3">
                         <div className="text-3xl">💎</div>
-                        <div className="px-2.5 py-1 bg-soft-blue/20 dark:bg-soft-blue/10 text-soft-blue dark:text-soft-blue rounded-full text-xs font-medium">
+                        <div className="px-2.5 py-1 bg-sage-100 dark:bg-sage-900/30 text-sage-700 dark:text-sage-400 rounded-full text-xs font-medium">
                             Total
                         </div>
                     </div>

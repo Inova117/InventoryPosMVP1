@@ -140,7 +140,7 @@ export default function POSPage() {
                                     <button
                                         key={product.id}
                                         onClick={() => handleAddToCart(product)}
-                                        className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 text-left hover:border-blue-500 dark:hover:border-blue-400 transition-all hover:shadow-lg"
+                                        className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 text-left hover:border-sage-500 dark:hover:border-sage-400 transition-all hover:shadow-lg"
                                     >
                                         <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">
                                             {product.name}
@@ -148,7 +148,7 @@ export default function POSPage() {
                                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                                             Stock: {product.stock}
                                         </p>
-                                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                                        <div className="text-2xl font-bold text-sage-600 dark:text-sage-400 mt-2">
                                             ${product.sell_price.toFixed(2)}
                                         </div>
                                     </button>
@@ -225,7 +225,7 @@ export default function POSPage() {
 
                 {/* Quick Actions Bar */}
                 {cartItems.length > 0 && (
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                    <div className="bg-gradient-to-r from-sage-50 to-warmth-50 dark:from-sage-950/50 dark:to-warmth-950/50 border border-sage-200 dark:border-sage-800 rounded-lg p-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium text-slate-700 dark:text-slate-300">⚡ Quick:</span>
@@ -249,7 +249,7 @@ export default function POSPage() {
                             </div>
                             <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
                                 <span>Items:</span>
-                                <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">{cartItems.length}</span>
+                                <span className="font-bold text-sage-600 dark:text-sage-400 text-sm">{cartItems.length}</span>
                             </div>
                         </div>
                     </div>

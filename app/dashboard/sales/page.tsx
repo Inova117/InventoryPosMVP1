@@ -72,7 +72,7 @@ export default function SalesPage() {
                     </p>
                     <a
                         href="/dashboard/pos"
-                        className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="inline-block px-6 py-3 bg-sage-600 text-white rounded-lg hover:bg-sage-700 transition"
                     >
                         Go to POS
                     </a>
@@ -93,7 +93,7 @@ export default function SalesPage() {
                         </div>
                         <div className="bg-white rounded-lg border border-slate-200 p-6">
                             <div className="text-sm text-slate-600 mb-1">Average Sale</div>
-                            <div className="text-2xl font-bold text-blue-600">
+                            <div className="text-2xl font-bold text-sage-600">
                                 ${(sales.reduce((sum, sale) => sum + sale.total, 0) / sales.length).toFixed(2)}
                             </div>
                         </div>
