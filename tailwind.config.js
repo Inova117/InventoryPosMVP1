@@ -20,6 +20,7 @@ module.exports = {
           700: '#4f574b',
           800: '#3f443b',
           900: '#2f332c',
+          950: '#23271f',
         },
         // Warm neutrals (replacing cold grays)
         warmth: {
@@ -41,7 +42,6 @@ module.exports = {
           dark: '#b86d54',
         },
         cream: '#fffaf0',
-        'soft-blue': '#a3bbcb',
 
         // Design tokens
         background: 'rgb(var(--background) / <alpha-value>)',
@@ -59,6 +59,20 @@ module.exports = {
         border: 'rgb(var(--border) / <alpha-value>)',
         input: 'rgb(var(--input) / <alpha-value>)',
         ring: 'rgb(var(--ring) / <alpha-value>)',
+
+        // Warm-tuned semantic tokens (success / warning / danger)
+        success: 'rgb(var(--success) / <alpha-value>)',
+        'success-foreground': 'rgb(var(--success-foreground) / <alpha-value>)',
+        'success-soft': 'rgb(var(--success-soft) / <alpha-value>)',
+        'success-soft-foreground': 'rgb(var(--success-soft-foreground) / <alpha-value>)',
+        warning: 'rgb(var(--warning) / <alpha-value>)',
+        'warning-foreground': 'rgb(var(--warning-foreground) / <alpha-value>)',
+        'warning-soft': 'rgb(var(--warning-soft) / <alpha-value>)',
+        'warning-soft-foreground': 'rgb(var(--warning-soft-foreground) / <alpha-value>)',
+        danger: 'rgb(var(--danger) / <alpha-value>)',
+        'danger-foreground': 'rgb(var(--danger-foreground) / <alpha-value>)',
+        'danger-soft': 'rgb(var(--danger-soft) / <alpha-value>)',
+        'danger-soft-foreground': 'rgb(var(--danger-soft-foreground) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],

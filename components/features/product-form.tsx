@@ -6,9 +6,12 @@ import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
+import { Alert } from '@/components/ui/alert';
 
 interface ProductFormProps {
     product?: Product | null;
+    categories?: string[];
     onSubmit: (data: ProductFormData) => Promise<void>;
     onCancel: () => void;
 }
@@ -22,7 +25,9 @@ export interface ProductFormData {
     sell_price: number;
 }
 
-export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
+const NEW_CATEGORY = '__new__';
+
+export function ProductForm({ product, categories = [], onSubmit, onCancel }: ProductFormProps) {
     const { t } = useT();
     const [formData, setFormData] = useState<ProductFormData>({
         sku: '',
@@ -34,6 +39,8 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+    // When true, the category Select shows a free-text input for a brand-new category.
+    const [creatingCategory, setCreatingCategory] = useState(false);
 
     useEffect(() => {
         if (product) {
@@ -45,7 +52,13 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                 buy_price: product.buy_price,
                 sell_price: product.sell_price,
             });
+            setCreatingCategory(!categories.includes(product.category) && product.category !== '');
+        } else if (categories.length > 0) {
+            setFormData((prev) => ({ ...prev, category: categories[0] as string }));
+        } else {
+            setCreatingCategory(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [product]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -55,13 +68,23 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
         try {
             await onSubmit(formData);
         } catch (err) {
-            setError(err instanceof Error ? err.message : t('inventory.deleteError'));
+            setError(err instanceof Error ? err.message : t('inventory.saveError'));
             setIsSubmitting(false);
         }
     };
 
     const handleChange = (field: keyof ProductFormData, value: string | number) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const onCategorySelect = (value: string) => {
+        if (value === NEW_CATEGORY) {
+            setCreatingCategory(true);
+            handleChange('category', '');
+        } else {
+            setCreatingCategory(false);
+            handleChange('category', value);
+        }
     };
 
     return (
@@ -74,15 +97,24 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label htmlFor="sku">{t('inventory.sku')}</Label>
-                        <Input id="sku" type="text" required value={formData.sku} onChange={(e) => handleChange('sku', e.target.value)} placeholder="CFE-ESP-250" />
+                        <Input id="sku" type="text" required value={formData.sku} onChange={(e) => handleChange('sku', e.target.value)} placeholder="CFE-LAT-250" />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="name">{t('inventory.name')}</Label>
-                        <Input id="name" type="text" required value={formData.name} onChange={(e) => handleChange('name', e.target.value)} />
+                        <Input id="name" type="text" required value={formData.name} onChange={(e) => handleChange('name', e.target.value)} placeholder={t('inventory.namePlaceholder')} />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="category">{t('inventory.category')}</Label>
-                        <Input id="category" type="text" required value={formData.category} onChange={(e) => handleChange('category', e.target.value)} />
+                        {categories.length > 0 && !creatingCategory ? (
+                            <Select id="category" value={formData.category} onChange={(e) => onCategorySelect(e.target.value)}>
+                                {categories.map((c) => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                                <option value={NEW_CATEGORY}>+ {t('inventory.newCategory')}</option>
+                            </Select>
+                        ) : (
+                            <Input id="category" type="text" required value={formData.category} onChange={(e) => handleChange('category', e.target.value)} placeholder={t('inventory.categoryPlaceholder')} />
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="stock">{t('inventory.stock')}</Label>
@@ -98,11 +130,7 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                     </div>
                 </div>
 
-                {error && (
-                    <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700 dark:bg-red-900/20 dark:text-red-400">
-                        {error}
-                    </div>
-                )}
+                {error && <Alert variant="danger" className="font-medium">{error}</Alert>}
 
                 <div className="flex gap-3 pt-2">
                     <Button type="submit" disabled={isSubmitting}>

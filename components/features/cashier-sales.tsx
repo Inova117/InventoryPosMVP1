@@ -2,12 +2,15 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Inbox } from 'lucide-react';
+import { Inbox, Receipt, DollarSign, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useT } from '@/components/providers/language-provider';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
 import { Button } from '@/components/ui/button';
+import { StatCard } from '@/components/features/stat-card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { formatCurrency } from '@/lib/utils';
 
 type Filter = 'all' | 'today' | 'week';
 
@@ -89,31 +92,18 @@ export default function CashierSalesPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
-                    <div className="mb-1 text-sm text-muted-foreground">{t('sales.totalSales')}</div>
-                    <div className="font-serif text-2xl font-semibold text-foreground">{filteredSales.length}</div>
-                </div>
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
-                    <div className="mb-1 text-sm text-muted-foreground">{t('sales.totalRevenue')}</div>
-                    <div className="font-serif text-2xl font-semibold text-sage-700 dark:text-sage-300">${totalRevenue.toFixed(2)}</div>
-                </div>
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
-                    <div className="mb-1 text-sm text-muted-foreground">{t('sales.averageSale')}</div>
-                    <div className="font-serif text-2xl font-semibold text-foreground">${averageSale.toFixed(2)}</div>
-                </div>
+                <StatCard title={t('sales.totalSales')} value={filteredSales.length} icon={Receipt} />
+                <StatCard title={t('sales.totalRevenue')} value={formatCurrency(totalRevenue, lang)} icon={DollarSign} badge={{ text: t('common.revenue'), variant: 'default' }} />
+                <StatCard title={t('sales.averageSale')} value={formatCurrency(averageSale, lang)} icon={BarChart3} />
             </div>
 
             {filteredSales.length === 0 ? (
-                <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-12 text-center elevation-1">
-                    <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                        <Inbox className="h-8 w-8" />
-                    </span>
-                    <h3 className="mb-2 font-serif text-xl font-semibold">{t('sales.noSales')}</h3>
-                    <p className="mb-6 text-muted-foreground">{t('sales.noSalesDesc')}</p>
-                    <Link href="/dashboard/pos">
-                        <Button>{t('sales.goToPos')}</Button>
-                    </Link>
-                </div>
+                <EmptyState
+                    icon={Inbox}
+                    title={t('sales.noSales')}
+                    description={t('sales.noSalesDesc')}
+                    action={<Link href="/dashboard/pos"><Button>{t('sales.goToPos')}</Button></Link>}
+                />
             ) : (
                 <div className="overflow-hidden rounded-2xl border border-border bg-card elevation-1">
                     <div className="overflow-x-auto">
@@ -141,9 +131,9 @@ export default function CashierSalesPage() {
                                                 </div>
                                             </td>
                                             <td className="whitespace-nowrap px-6 py-4 font-mono text-sm text-muted-foreground">#{sale.id.slice(-6).toUpperCase()}</td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-foreground tabular-nums">${sale.total.toFixed(2)}</td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-sage-700 dark:text-sage-300 tabular-nums">${sale.amount_received.toFixed(2)}</td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-muted-foreground tabular-nums">${sale.change_given.toFixed(2)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-foreground tabular-nums">{formatCurrency(sale.total, lang)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-sage-700 dark:text-sage-300 tabular-nums">{formatCurrency(sale.amount_received, lang)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-muted-foreground tabular-nums">{formatCurrency(sale.change_given, lang)}</td>
                                         </tr>
                                     ))}
                             </tbody>
@@ -158,15 +148,15 @@ export default function CashierSalesPage() {
                     <div className="grid gap-4 text-sm md:grid-cols-2">
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">{t('cashierSales.highestSale')}</span>
-                            <span className="font-semibold text-foreground">${Math.max(...filteredSales.map((s) => s.total)).toFixed(2)}</span>
+                            <span className="font-semibold text-foreground tabular-nums">{formatCurrency(Math.max(...filteredSales.map((s) => s.total)), lang)}</span>
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">{t('cashierSales.lowestSale')}</span>
-                            <span className="font-semibold text-foreground">${Math.min(...filteredSales.map((s) => s.total)).toFixed(2)}</span>
+                            <span className="font-semibold text-foreground tabular-nums">{formatCurrency(Math.min(...filteredSales.map((s) => s.total)), lang)}</span>
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">{t('cashierSales.totalChange')}</span>
-                            <span className="font-semibold text-foreground">${filteredSales.reduce((sum, s) => sum + s.change_given, 0).toFixed(2)}</span>
+                            <span className="font-semibold text-foreground tabular-nums">{formatCurrency(filteredSales.reduce((sum, s) => sum + s.change_given, 0), lang)}</span>
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">{t('cashierSales.transactions')}</span>

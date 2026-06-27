@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -12,6 +12,7 @@ import { ProductsList } from '@/components/features/products-list';
 import type { ProductFormData } from '@/components/features/product-form';
 import { ProductForm } from '@/components/features/product-form';
 import { Button } from '@/components/ui/button';
+import { TableSkeleton } from '@/components/ui/skeleton';
 import {
     Dialog,
     DialogContent,
@@ -85,10 +86,13 @@ export default function InventoryPage() {
         setEditingProduct(null);
     };
 
+    const categories = useMemo(() => Array.from(new Set(products.map((p) => p.category))).sort(), [products]);
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center section-spacing">
-                <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="max-w-7xl space-y-6">
+                <div className="h-9 w-48 animate-pulse rounded-xl bg-muted" />
+                <TableSkeleton rows={8} />
             </div>
         );
     }
@@ -115,12 +119,13 @@ export default function InventoryPage() {
             {showForm && (
                 <ProductForm
                     product={editingProduct}
+                    categories={categories}
                     onSubmit={editingProduct ? handleUpdate : handleCreate}
                     onCancel={handleCancel}
                 />
             )}
 
-            <ProductsList products={products} onEdit={handleEdit} onDelete={setPendingDelete} />
+            <ProductsList products={products} onEdit={handleEdit} onDelete={setPendingDelete} onAdd={() => setShowForm(true)} />
 
             <Dialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
                 <DialogContent className="max-w-sm">

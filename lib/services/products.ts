@@ -101,11 +101,6 @@ export const productsService = {
             throw new Error('Product not found');
         }
 
-        // Check if stock is 0 before deleting
-        if (product.stock > 0) {
-            throw new Error('Cannot delete product with stock > 0. Reduce stock to 0 first.');
-        }
-
         return await mockDb.delete('products', id);
     },
 

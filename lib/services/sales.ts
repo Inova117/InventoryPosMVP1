@@ -1,5 +1,5 @@
 import { mockDb } from '@/lib/mock-db';
-import type { Sale } from '@/types/mock';
+import type { Sale, SaleItem } from '@/types/mock';
 import { productsService } from './products';
 
 export interface CreateSaleInput {
@@ -68,11 +68,17 @@ export const salesService = {
     },
 
     async getSalesByStore(storeId: string): Promise<Sale[]> {
-        return await mockDb.filter('sales', (s) => s.store_id === storeId);
+        const sales = await mockDb.filter('sales', (s) => s.store_id === storeId);
+        // Newest first — POS appends new sales to the end of storage.
+        return sales.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     },
 
     async getSaleById(id: string): Promise<Sale | null> {
         return await mockDb.find('sales', (s) => s.id === id);
+    },
+
+    async getItemsBySale(saleId: string): Promise<SaleItem[]> {
+        return await mockDb.filter('sale_items', (i) => i.sale_id === saleId);
     },
 
     async getTodaySales(storeId: string): Promise<Sale[]> {

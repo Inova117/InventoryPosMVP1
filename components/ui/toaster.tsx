@@ -14,8 +14,8 @@ export function Toaster() {
                     toast: "rounded-xl border border-border bg-card text-card-foreground elevation-3 font-sans",
                     title: "font-medium",
                     description: "text-muted-foreground",
-                    success: "[&_[data-icon]]:text-sage-600",
-                    error: "[&_[data-icon]]:text-red-600",
+                    success: "[&_[data-icon]]:text-success",
+                    error: "[&_[data-icon]]:text-danger",
                 },
             }}
         />

@@ -4,6 +4,7 @@ import { CheckCircle2, Printer, Plus } from 'lucide-react';
 import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { formatCurrency } from '@/lib/utils';
 
 export interface Receipt {
     saleId: string;
@@ -21,7 +22,7 @@ interface SaleSuccessDialogProps {
 }
 
 export function SaleSuccessDialog({ open, onOpenChange, receipt, onNewSale }: SaleSuccessDialogProps) {
-    const { t } = useT();
+    const { t, lang } = useT();
     if (!receipt) return null;
 
     return (
@@ -40,8 +41,8 @@ export function SaleSuccessDialog({ open, onOpenChange, receipt, onNewSale }: Sa
                 {/* Change due — the headline moment */}
                 <div className="rounded-2xl border border-sage-200 bg-sage-50 p-5 text-center dark:border-sage-900/30 dark:bg-sage-900/20">
                     <p className="text-sm font-medium text-sage-700 dark:text-sage-300">{t('checkout.changeDue')}</p>
-                    <p className="font-serif text-5xl font-semibold text-sage-800 dark:text-sage-200">
-                        ${receipt.change.toFixed(2)}
+                    <p className="font-serif text-5xl font-semibold text-sage-800 dark:text-sage-200 tabular-nums">
+                        {formatCurrency(receipt.change, lang)}
                     </p>
                 </div>
 
@@ -56,18 +57,18 @@ export function SaleSuccessDialog({ open, onOpenChange, receipt, onNewSale }: Sa
                                 <span className="text-foreground">
                                     <span className="text-muted-foreground">{item.quantity}×</span> {item.name}
                                 </span>
-                                <span className="font-medium">${item.subtotal.toFixed(2)}</span>
+                                <span className="font-medium tabular-nums">{formatCurrency(item.subtotal, lang)}</span>
                             </div>
                         ))}
                     </div>
                     <div className="mt-2 space-y-1 border-t border-border pt-2 text-sm">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">{t('checkout.totalToPay')}</span>
-                            <span className="font-semibold">${receipt.total.toFixed(2)}</span>
+                            <span className="font-semibold tabular-nums">{formatCurrency(receipt.total, lang)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">{t('checkout.paidLabel')}</span>
-                            <span>${receipt.amountReceived.toFixed(2)}</span>
+                            <span className="tabular-nums">{formatCurrency(receipt.amountReceived, lang)}</span>
                         </div>
                     </div>
                 </div>

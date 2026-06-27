@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Store, UserCog, ShoppingBag } from 'lucide-react';
+import { UserCog, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Alert } from '@/components/ui/alert';
 import { LanguageToggle } from '@/components/ui/language-toggle';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { ZerionTile } from '@/components/brand/zerion-logo';
 
 export default function LoginPage() {
     const { login, isLoading } = useAuth();
@@ -27,30 +30,31 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-warmth-50 via-sage-50/30 to-warmth-100 px-4 dark:from-warmth-900 dark:via-sage-950/20 dark:to-warmth-800">
-            <div className="absolute right-4 top-4">
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-mesh" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 noise-overlay" />
+            <div className="absolute right-4 top-4 flex items-center gap-2">
+                <ThemeToggle />
                 <LanguageToggle />
             </div>
-            <div className="w-full max-w-lg animate-fade-in space-y-6">
+            <div className="relative w-full max-w-lg animate-fade-in space-y-6">
                 {/* Header */}
                 <div className="space-y-3 text-center">
-                    <span className="mx-auto mb-2 flex h-16 w-16 animate-scale-in items-center justify-center rounded-2xl bg-primary text-primary-foreground elevation-2">
-                        <Store className="h-8 w-8" />
-                    </span>
-                    <h1 className="font-serif text-4xl font-semibold text-warmth-900 dark:text-warmth-50 md:text-5xl">
+                    <ZerionTile size="lg" className="mx-auto mb-2 animate-scale-in" />
+                    <h1 className="font-serif text-4xl font-semibold text-foreground md:text-5xl">
                         {t('login.title')}
                     </h1>
-                    <p className="text-lg text-warmth-600 dark:text-warmth-400">{t('login.subtitle')}</p>
+                    <p className="text-lg text-muted-foreground">{t('login.subtitle')}</p>
                     <div className="inline-block rounded-full bg-sage-100 px-3 py-1 text-xs font-medium text-sage-700 dark:bg-sage-900/30 dark:text-sage-300">
                         {t('login.demoBadge')}
                     </div>
                 </div>
 
                 {/* Login card */}
-                <div className="rounded-3xl border border-warmth-200 bg-card px-6 py-10 elevation-3 dark:border-warmth-700 md:px-10">
+                <div className="rounded-3xl border border-border bg-card px-6 py-10 elevation-3 md:px-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-warmth-700 dark:text-warmth-300">
+                            <Label htmlFor="email" className="text-foreground">
                                 {t('login.emailLabel')}
                             </Label>
                             <Input
@@ -67,7 +71,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-warmth-700 dark:text-warmth-300">
+                            <Label htmlFor="password" className="text-foreground">
                                 {t('login.passwordLabel')}
                             </Label>
                             <Input
@@ -83,11 +87,7 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        {error && (
-                            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
-                                {error}
-                            </div>
-                        )}
+                        {error && <Alert variant="danger" className="font-medium">{error}</Alert>}
 
                         <Button type="submit" size="lg" disabled={isLoading} className="w-full">
                             {isLoading ? t('login.signingIn') : t('login.signIn')}
@@ -98,10 +98,10 @@ export default function LoginPage() {
                     <div className="mt-8">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-warmth-200 dark:border-warmth-700" />
+                                <div className="w-full border-t border-border" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="bg-card px-3 font-medium text-warmth-600 dark:text-warmth-400">
+                                <span className="bg-card px-3 font-medium text-muted-foreground">
                                     {t('login.quickAccess')}
                                 </span>
                             </div>
@@ -136,7 +136,7 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <p className="text-center text-sm leading-relaxed text-warmth-600 dark:text-warmth-400">
+                <p className="relative text-center text-sm leading-relaxed text-muted-foreground">
                     {t('login.demoNote')}
                 </p>
             </div>

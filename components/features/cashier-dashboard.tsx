@@ -9,6 +9,7 @@ import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
 import { StatCard } from '@/components/features/stat-card';
 import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
 
 export default function CashierDashboard() {
     const { user } = useAuth();
@@ -60,8 +61,8 @@ export default function CashierDashboard() {
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard title={t('cashier.todaysSales')} value={todayCount} icon={ShoppingCart} badge={{ text: t('common.today'), variant: 'default' }} />
-                <StatCard title={t('cashier.revenueToday')} value={`$${todayRevenue.toFixed(2)}`} icon={DollarSign} badge={{ text: t('common.today'), variant: 'default' }} />
-                <StatCard title={t('cashier.averageSale')} value={`$${averageSale.toFixed(2)}`} icon={BarChart3} />
+                <StatCard title={t('cashier.revenueToday')} value={formatCurrency(todayRevenue, lang)} icon={DollarSign} badge={{ text: t('common.today'), variant: 'default' }} />
+                <StatCard title={t('cashier.averageSale')} value={formatCurrency(averageSale, lang)} icon={BarChart3} />
                 <StatCard title={t('cashier.shiftStarted')} value={sessionStart} icon={Clock} />
             </div>
 
@@ -108,8 +109,8 @@ export default function CashierDashboard() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-serif font-semibold text-sage-700 dark:text-sage-300">${sale.total.toFixed(2)}</div>
-                                    <div className="text-xs text-muted-foreground">{t('sales.change')}: ${sale.change_given.toFixed(2)}</div>
+                                    <div className="font-serif font-semibold text-sage-700 dark:text-sage-300 tabular-nums">{formatCurrency(sale.total, lang)}</div>
+                                    <div className="text-xs text-muted-foreground tabular-nums">{t('sales.change')}: {formatCurrency(sale.change_given, lang)}</div>
                                 </div>
                             </div>
                         ))}

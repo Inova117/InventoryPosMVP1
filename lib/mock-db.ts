@@ -1,8 +1,9 @@
 import type { MockSchema, Profile, Product } from '@/types/mock';
+import { STORE_NAME } from '@/lib/constants';
 
 // Bump the version whenever the seed shape changes so stale demo data is replaced.
-const DB_KEY = 'zerion_pos_db_v2';
-const LATENCY_MS = 450;
+export const DB_KEY = 'zerion_pos_db_v2';
+export const LATENCY_MS = 450;
 
 // --- Deterministic seed helpers (stable data across reloads for clean demos) ---
 function mulberry32(seed: number): () => number {
@@ -67,7 +68,7 @@ function buildSeed(): MockSchema {
     const nowIso = new Date(now).toISOString();
 
     const stores: MockSchema['stores'] = [
-        { id: 'store-1', name: 'Café Aurora', owner_id: 'user-owner-1', created_at: nowIso },
+        { id: 'store-1', name: STORE_NAME, owner_id: 'user-owner-1', created_at: nowIso },
     ];
 
     const profiles: Profile[] = [

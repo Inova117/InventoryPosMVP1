@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import type { CartItem } from '@/lib/services/cart';
 import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
 
 interface CartDisplayProps {
     items: CartItem[];
@@ -12,7 +13,7 @@ interface CartDisplayProps {
 }
 
 export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDisplayProps) {
-    const { t } = useT();
+    const { t, lang } = useT();
     const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
     if (items.length === 0) {
@@ -44,7 +45,7 @@ export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDispl
                     >
                         <div className="min-w-0 flex-1">
                             <h4 className="truncate font-medium text-foreground">{item.product.name}</h4>
-                            <p className="text-sm text-muted-foreground">${item.product.sell_price.toFixed(2)}</p>
+                            <p className="text-sm text-muted-foreground">{formatCurrency(item.product.sell_price, lang)}</p>
                         </div>
 
                         <div className="flex items-center justify-between gap-3 sm:justify-end">
@@ -69,7 +70,7 @@ export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDispl
                             </div>
 
                             <p className="min-w-[5rem] text-right font-serif font-semibold text-foreground tabular-nums">
-                                ${item.subtotal.toFixed(2)}
+                                {formatCurrency(item.subtotal, lang)}
                             </p>
 
                             <Button
@@ -77,7 +78,7 @@ export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDispl
                                 size="icon"
                                 aria-label={t('cart.remove')}
                                 onClick={() => onRemoveItem(item.product.id)}
-                                className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                                className="text-danger hover:bg-danger-soft hover:text-danger-soft-foreground"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
@@ -88,7 +89,7 @@ export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDispl
 
             <div className="flex items-center justify-between border-t border-border bg-muted p-4">
                 <span className="text-lg font-semibold text-foreground">{t('cart.total')}</span>
-                <span className="font-serif text-2xl font-semibold text-foreground tabular-nums">${total.toFixed(2)}</span>
+                <span className="font-serif text-2xl font-semibold text-foreground tabular-nums">{formatCurrency(total, lang)}</span>
             </div>
         </div>
     );

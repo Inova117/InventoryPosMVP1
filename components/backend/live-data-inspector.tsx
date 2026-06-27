@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { DB_KEY } from '@/lib/mock-db';
 
 export function LiveDataInspector() {
     const [activeTable, setActiveTable] = useState<string>('products');
@@ -11,7 +12,7 @@ export function LiveDataInspector() {
         setMounted(true);
         if (typeof window === 'undefined') return;
 
-        const data = localStorage.getItem('mvp_inventory_pos_db_v1');
+        const data = localStorage.getItem(DB_KEY);
         if (!data) return;
 
         try {
@@ -22,38 +23,38 @@ export function LiveDataInspector() {
     }, []);
 
     const tables = [
-        { name: 'stores', icon: '🏪', label: 'Stores' },
-        { name: 'profiles', icon: '👤', label: 'Users' },
-        { name: 'products', icon: '📦', label: 'Products' },
-        { name: 'suppliers', icon: '🚚', label: 'Suppliers' },
-        { name: 'sales', icon: '💰', label: 'Sales' },
-        { name: 'sale_items', icon: '📝', label: 'Sale Items' },
+        { name: 'stores', icon: '🏪', label: 'Tiendas' },
+        { name: 'profiles', icon: '👤', label: 'Usuarios' },
+        { name: 'products', icon: '📦', label: 'Productos' },
+        { name: 'suppliers', icon: '🚚', label: 'Proveedores' },
+        { name: 'sales', icon: '💰', label: 'Ventas' },
+        { name: 'sale_items', icon: '📝', label: 'Líneas' },
     ];
 
     if (!mounted) {
         return (
-            <div className="bg-card rounded-2xl elevation-1 border border-border p-8">
-                <h2 className="text-2xl font-serif font-semibold text-foreground mb-6">Live Data Inspector</h2>
-                <div className="bg-muted border border-border rounded-xl p-6 text-center">
-                    <p className="text-muted-foreground">Loading...</p>
+            <div className="rounded-2xl border border-border bg-card p-8 elevation-1">
+                <h2 className="mb-6 font-serif text-2xl font-semibold text-foreground">Inspector de datos en vivo</h2>
+                <div className="rounded-xl border border-border bg-muted p-6 text-center">
+                    <p className="text-muted-foreground">Cargando…</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-card rounded-2xl elevation-1 border border-border p-8">
-            <h2 className="text-2xl font-serif font-semibold text-foreground mb-6">Live Data Inspector</h2>
+        <div className="rounded-2xl border border-border bg-card p-8 elevation-1">
+            <h2 className="mb-6 font-serif text-2xl font-semibold text-foreground">Inspector de datos en vivo</h2>
 
             {mockData ? (
                 <div className="space-y-4">
-                    {/* Table Selector */}
-                    <div className="flex gap-2 flex-wrap">
+                    {/* Table selector */}
+                    <div className="flex flex-wrap gap-2">
                         {tables.map((table) => (
                             <button
                                 key={table.name}
                                 onClick={() => setActiveTable(table.name)}
-                                className={`px-4 py-2 rounded-xl font-medium transition-colors ${activeTable === table.name
+                                className={`rounded-xl px-4 py-2 font-medium transition-colors focus-ring ${activeTable === table.name
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-muted text-muted-foreground hover:bg-secondary'
                                     }`}
@@ -64,33 +65,33 @@ export function LiveDataInspector() {
                         ))}
                     </div>
 
-                    {/* Data Display */}
-                    <div className="bg-warmth-900 rounded-xl p-6 overflow-x-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-mono text-green-400 text-sm">
-                                Table: {activeTable}
+                    {/* Data display — terminal */}
+                    <div className="overflow-x-auto rounded-xl bg-warmth-900 p-6">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="font-mono text-sm text-sage-300">
+                                Tabla: {activeTable}
                             </h3>
-                            <span className="text-warmth-300 text-xs">
+                            <span className="text-xs text-warmth-300">
                                 {/* eslint-disable-next-line security/detect-object-injection */}
-                                {Array.isArray(mockData[activeTable]) ? mockData[activeTable].length : 0} records
+                                {Array.isArray(mockData[activeTable]) ? mockData[activeTable].length : 0} registros
                             </span>
                         </div>
-                        <pre className="text-green-400 text-xs font-mono overflow-x-auto">
+                        <pre className="overflow-x-auto font-mono text-xs text-sage-200">
                             {/* eslint-disable-next-line security/detect-object-injection */}
                             {JSON.stringify(mockData[activeTable] || [], null, 2)}
                         </pre>
                     </div>
 
-                    {/* Storage Info */}
-                    <div className="grid md:grid-cols-3 gap-4 text-sm">
-                        <div className="bg-muted rounded-xl p-4">
-                            <div className="text-muted-foreground mb-1">Total Size</div>
+                    {/* Storage info */}
+                    <div className="grid gap-4 text-sm md:grid-cols-3">
+                        <div className="rounded-xl bg-muted p-4">
+                            <div className="mb-1 text-muted-foreground">Tamaño total</div>
                             <div className="font-semibold text-foreground">
                                 {(JSON.stringify(mockData).length / 1024).toFixed(2)} KB
                             </div>
                         </div>
-                        <div className="bg-muted rounded-xl p-4">
-                            <div className="text-muted-foreground mb-1">Total Records</div>
+                        <div className="rounded-xl bg-muted p-4">
+                            <div className="mb-1 text-muted-foreground">Registros totales</div>
                             <div className="font-semibold text-foreground">
                                 {Object.values(mockData).reduce(
                                     (sum: number, arr) => sum + (Array.isArray(arr) ? arr.length : 0),
@@ -98,18 +99,16 @@ export function LiveDataInspector() {
                                 )}
                             </div>
                         </div>
-                        <div className="bg-muted rounded-xl p-4">
-                            <div className="text-muted-foreground mb-1">Storage Key</div>
-                            <div className="font-mono text-xs text-foreground">
-                                mvp_inventory_pos_db_v1
-                            </div>
+                        <div className="rounded-xl bg-muted p-4">
+                            <div className="mb-1 text-muted-foreground">Clave de almacenamiento</div>
+                            <div className="font-mono text-xs text-foreground">{DB_KEY}</div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center dark:bg-yellow-900/20 dark:border-yellow-900/30">
-                    <p className="text-yellow-800 dark:text-yellow-300">
-                        No mock database found. Please login and the database will be initialized automatically.
+                <div className="rounded-xl border border-warning/25 bg-warning-soft p-6 text-center">
+                    <p className="text-warning-soft-foreground">
+                        No se encontró la base de datos. Inicia sesión y se creará automáticamente con datos de ejemplo.
                     </p>
                 </div>
             )}
