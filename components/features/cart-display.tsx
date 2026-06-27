@@ -1,6 +1,8 @@
 'use client';
 
+import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import type { CartItem } from '@/lib/services/cart';
+import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 
 interface CartDisplayProps {
@@ -9,94 +11,84 @@ interface CartDisplayProps {
     onRemoveItem: (productId: string) => void;
 }
 
-export function CartDisplay({
-    items,
-    onUpdateQuantity,
-    onRemoveItem,
-}: CartDisplayProps) {
+export function CartDisplay({ items, onUpdateQuantity, onRemoveItem }: CartDisplayProps) {
+    const { t } = useT();
     const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
     if (items.length === 0) {
         return (
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-8 text-center">
-                <p className="text-slate-500 dark:text-slate-400">
-                    Cart is empty. Add products to start a sale.
-                </p>
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-10 text-center elevation-1">
+                <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                    <ShoppingCart className="h-7 w-7" />
+                </span>
+                <p className="font-medium text-foreground">{t('cart.empty')}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t('cart.emptyHint')}</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                    Cart ({items.length} items)
+        <div className="overflow-hidden rounded-2xl border border-border bg-card elevation-2">
+            <div className="border-b border-border p-4">
+                <h3 className="flex items-center gap-2 font-serif text-lg font-semibold">
+                    <ShoppingCart className="h-5 w-5 text-sage-600 dark:text-sage-400" />
+                    {t('cart.title')} · {items.length} {t('cart.items')}
                 </h3>
             </div>
 
-            <div className="divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="divide-y divide-border">
                 {items.map((item) => (
-                    <div key={item.product.id} className="p-4 flex items-center gap-4">
-                        <div className="flex-1">
-                            <h4 className="font-medium text-slate-900 dark:text-slate-100">
-                                {item.product.name}
-                            </h4>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                ${item.product.sell_price.toFixed(2)} each
-                            </p>
+                    <div
+                        key={item.product.id}
+                        className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4"
+                    >
+                        <div className="min-w-0 flex-1">
+                            <h4 className="truncate font-medium text-foreground">{item.product.name}</h4>
+                            <p className="text-sm text-muted-foreground">${item.product.sell_price.toFixed(2)}</p>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                    onUpdateQuantity(item.product.id, item.quantity - 1)
-                                }
-                            >
-                                -
-                            </Button>
-                            <span className="w-12 text-center font-medium">
-                                {item.quantity}
-                            </span>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                    onUpdateQuantity(item.product.id, item.quantity + 1)
-                                }
-                            >
-                                +
-                            </Button>
-                        </div>
+                        <div className="flex items-center justify-between gap-3 sm:justify-end">
+                            <div className="flex items-center gap-1.5">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    aria-label="-1"
+                                    onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
+                                >
+                                    <Minus className="h-4 w-4" />
+                                </Button>
+                                <span className="w-10 text-center font-medium tabular-nums">{item.quantity}</span>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    aria-label="+1"
+                                    onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </div>
 
-                        <div className="w-24 text-right">
-                            <p className="font-semibold text-slate-900 dark:text-slate-100">
+                            <p className="min-w-[5rem] text-right font-serif font-semibold text-foreground tabular-nums">
                                 ${item.subtotal.toFixed(2)}
                             </p>
-                        </div>
 
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onRemoveItem(item.product.id)}
-                            className="text-red-600 hover:text-red-900 dark:text-red-400"
-                        >
-                            Remove
-                        </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label={t('cart.remove')}
+                                onClick={() => onRemoveItem(item.product.id)}
+                                className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="p-4 border-t-2 border-slate-900 dark:border-slate-100 bg-slate-50 dark:bg-slate-900">
-                <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                        Total
-                    </span>
-                    <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                        ${total.toFixed(2)}
-                    </span>
-                </div>
+            <div className="flex items-center justify-between border-t border-border bg-muted p-4">
+                <span className="text-lg font-semibold text-foreground">{t('cart.total')}</span>
+                <span className="font-serif text-2xl font-semibold text-foreground tabular-nums">${total.toFixed(2)}</span>
             </div>
         </div>
     );

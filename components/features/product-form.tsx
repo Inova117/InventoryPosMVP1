@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Product } from '@/types/mock';
+import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,7 @@ export interface ProductFormData {
 }
 
 export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
+    const { t } = useT();
     const [formData, setFormData] = useState<ProductFormData>({
         sku: '',
         name: '',
@@ -50,11 +52,10 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
         e.preventDefault();
         setError('');
         setIsSubmitting(true);
-
         try {
             await onSubmit(formData);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to save product');
+            setError(err instanceof Error ? err.message : t('inventory.deleteError'));
             setIsSubmitting(false);
         }
     };
@@ -64,100 +65,51 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-            <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-slate-100">
-                {product ? 'Edit Product' : 'Create New Product'}
+        <div className="rounded-2xl border border-border bg-card p-6 elevation-2">
+            <h3 className="mb-4 font-serif text-xl font-semibold text-foreground">
+                {product ? t('inventory.editProduct') : t('inventory.newProduct')}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <Label htmlFor="sku">SKU</Label>
-                        <Input
-                            id="sku"
-                            type="text"
-                            required
-                            value={formData.sku}
-                            onChange={(e) => handleChange('sku', e.target.value)}
-                            placeholder="PROD-001"
-                        />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="sku">{t('inventory.sku')}</Label>
+                        <Input id="sku" type="text" required value={formData.sku} onChange={(e) => handleChange('sku', e.target.value)} placeholder="CFE-ESP-250" />
                     </div>
-
-                    <div>
-                        <Label htmlFor="name">Product Name</Label>
-                        <Input
-                            id="name"
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) => handleChange('name', e.target.value)}
-                            placeholder="Wireless Mouse"
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="name">{t('inventory.name')}</Label>
+                        <Input id="name" type="text" required value={formData.name} onChange={(e) => handleChange('name', e.target.value)} />
                     </div>
-
-                    <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Input
-                            id="category"
-                            type="text"
-                            required
-                            value={formData.category}
-                            onChange={(e) => handleChange('category', e.target.value)}
-                            placeholder="Electronics"
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="category">{t('inventory.category')}</Label>
+                        <Input id="category" type="text" required value={formData.category} onChange={(e) => handleChange('category', e.target.value)} />
                     </div>
-
-                    <div>
-                        <Label htmlFor="stock">Stock Quantity</Label>
-                        <Input
-                            id="stock"
-                            type="number"
-                            min="0"
-                            required
-                            value={formData.stock}
-                            onChange={(e) => handleChange('stock', parseInt(e.target.value) || 0)}
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="stock">{t('inventory.stock')}</Label>
+                        <Input id="stock" type="number" min="0" required value={formData.stock} onChange={(e) => handleChange('stock', parseInt(e.target.value) || 0)} />
                     </div>
-
-                    <div>
-                        <Label htmlFor="buy_price">Buy Price ($)</Label>
-                        <Input
-                            id="buy_price"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            required
-                            value={formData.buy_price}
-                            onChange={(e) => handleChange('buy_price', parseFloat(e.target.value) || 0)}
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="buy_price">{t('inventory.buyPrice')} ($)</Label>
+                        <Input id="buy_price" type="number" step="0.01" min="0" required value={formData.buy_price} onChange={(e) => handleChange('buy_price', parseFloat(e.target.value) || 0)} />
                     </div>
-
-                    <div>
-                        <Label htmlFor="sell_price">Sell Price ($)</Label>
-                        <Input
-                            id="sell_price"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            required
-                            value={formData.sell_price}
-                            onChange={(e) => handleChange('sell_price', parseFloat(e.target.value) || 0)}
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="sell_price">{t('inventory.sellPrice')} ($)</Label>
+                        <Input id="sell_price" type="number" step="0.01" min="0" required value={formData.sell_price} onChange={(e) => handleChange('sell_price', parseFloat(e.target.value) || 0)} />
                     </div>
                 </div>
 
                 {error && (
-                    <div className="text-red-600 text-sm font-medium bg-red-50 dark:bg-red-900/20 p-3 rounded">
+                    <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700 dark:bg-red-900/20 dark:text-red-400">
                         {error}
                     </div>
                 )}
 
                 <div className="flex gap-3 pt-2">
                     <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : product ? 'Update Product' : 'Create Product'}
+                        {isSubmitting ? t('checkout.processing') : t('common.save')}
                     </Button>
                     <Button type="button" variant="outline" onClick={onCancel}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>
                 </div>
             </form>

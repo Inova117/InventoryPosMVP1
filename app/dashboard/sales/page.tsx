@@ -1,25 +1,29 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { ShoppingCart, UserCog } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { useT } from '@/components/providers/language-provider';
 import { salesService } from '@/lib/services/sales';
 import type { Sale } from '@/types/mock';
-import dynamic from 'next/dynamic';
+import { Button } from '@/components/ui/button';
 
 const CashierSalesPage = dynamic(() => import('@/components/features/cashier-sales'), {
-    loading: () => <div className="p-8"><div className="animate-pulse h-32 bg-slate-200 rounded"></div></div>
+    loading: () => <div className="p-8"><div className="h-32 animate-pulse rounded-2xl bg-warmth-200" /></div>
 });
 
 export default function SalesPage() {
     const { user } = useAuth();
+    const { t, lang } = useT();
+    const locale = lang === 'es' ? 'es-MX' : 'en-US';
 
-    // All hooks must be at the top level
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
 
     const loadSales = useCallback(async () => {
         if (!user?.store_id) return;
-
         try {
             const data = await salesService.getSalesByStore(user.store_id);
             setSales(data);
@@ -34,127 +38,93 @@ export default function SalesPage() {
         loadSales();
     }, [loadSales]);
 
-    // Show cashier-specific sales page
     if (user?.role === 'cashier') {
         return <CashierSalesPage />;
     }
 
-
-
     if (loading) {
         return (
-            <div className="p-8">
-                <div className="animate-pulse">
-                    <div className="h-8 bg-slate-200 rounded w-1/4 mb-6"></div>
-                    <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="h-24 bg-slate-200 rounded"></div>
-                        ))}
-                    </div>
-                </div>
+            <div className="flex items-center justify-center section-spacing">
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             </div>
         );
     }
 
+    const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
+
     return (
-        <div className="p-8">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-slate-900">Sales History</h1>
-                <p className="text-slate-600 mt-2">View all completed transactions</p>
+        <div className="max-w-7xl animate-fade-in space-y-6">
+            <div>
+                <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground md:text-4xl">{t('sales.title')}</h1>
+                <p className="mt-1 text-muted-foreground">{t('sales.subtitle')}</p>
             </div>
 
             {sales.length === 0 ? (
-                <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-                    <div className="text-6xl mb-4">💰</div>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No Sales Yet</h3>
-                    <p className="text-slate-600 mb-6">
-                        Sales will appear here once you process transactions in the POS
-                    </p>
-                    <a
-                        href="/dashboard/pos"
-                        className="inline-block px-6 py-3 bg-sage-600 text-white rounded-lg hover:bg-sage-700 transition"
-                    >
-                        Go to POS
-                    </a>
+                <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-12 text-center elevation-1">
+                    <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                        <ShoppingCart className="h-8 w-8" />
+                    </span>
+                    <h3 className="mb-2 font-serif text-xl font-semibold">{t('sales.noSales')}</h3>
+                    <p className="mb-6 text-muted-foreground">{t('sales.noSalesDesc')}</p>
+                    <Link href="/dashboard/pos">
+                        <Button>{t('sales.goToPos')}</Button>
+                    </Link>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    {/* Summary Cards */}
-                    <div className="grid md:grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-lg border border-slate-200 p-6">
-                            <div className="text-sm text-slate-600 mb-1">Total Sales</div>
-                            <div className="text-2xl font-bold text-slate-900">{sales.length}</div>
+                <div className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-3">
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
+                            <div className="mb-1 text-sm text-muted-foreground">{t('sales.totalSales')}</div>
+                            <div className="font-serif text-2xl font-semibold text-foreground">{sales.length}</div>
                         </div>
-                        <div className="bg-white rounded-lg border border-slate-200 p-6">
-                            <div className="text-sm text-slate-600 mb-1">Total Revenue</div>
-                            <div className="text-2xl font-bold text-green-600">
-                                ${sales.reduce((sum, sale) => sum + sale.total, 0).toFixed(2)}
-                            </div>
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
+                            <div className="mb-1 text-sm text-muted-foreground">{t('sales.totalRevenue')}</div>
+                            <div className="font-serif text-2xl font-semibold text-sage-700 dark:text-sage-300">${totalRevenue.toFixed(2)}</div>
                         </div>
-                        <div className="bg-white rounded-lg border border-slate-200 p-6">
-                            <div className="text-sm text-slate-600 mb-1">Average Sale</div>
-                            <div className="text-2xl font-bold text-sage-600">
-                                ${(sales.reduce((sum, sale) => sum + sale.total, 0) / sales.length).toFixed(2)}
-                            </div>
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-warm">
+                            <div className="mb-1 text-sm text-muted-foreground">{t('sales.averageSale')}</div>
+                            <div className="font-serif text-2xl font-semibold text-foreground">${(totalRevenue / sales.length).toFixed(2)}</div>
                         </div>
                     </div>
 
-                    {/* Sales List */}
-                    <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-slate-50 border-b border-slate-200">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Date
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Sale ID
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Cashier
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Total
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Paid
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
-                                        Change
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-200">
-                                {sales.map((sale) => (
-                                    <tr key={sale.id} className="hover:bg-slate-50 transition">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                                            {new Date(sale.created_at).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">
-                                            {sale.id.substring(0, 8)}...
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                            {sale.cashier_id.includes('owner') ? '👤 Owner' : '💼 Cashier'}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-slate-900">
-                                            ${sale.total.toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">
-                                            ${sale.amount_received.toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-600">
-                                            ${sale.change_given.toFixed(2)}
-                                        </td>
+                    <div className="overflow-hidden rounded-2xl border border-border bg-card elevation-1">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full">
+                                <thead className="border-b border-border bg-muted/50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.date')}</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.id')}</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.cashier')}</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.total')}</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.paid')}</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('sales.change')}</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-border">
+                                    {sales.map((sale) => (
+                                        <tr key={sale.id} className="transition-colors hover:bg-muted/40">
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-foreground">
+                                                {new Date(sale.created_at).toLocaleDateString(locale, {
+                                                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                                                })}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 font-mono text-sm text-muted-foreground">
+                                                {sale.id.slice(-6).toUpperCase()}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
+                                                <span className="inline-flex items-center gap-1.5">
+                                                    {sale.cashier_id.includes('owner') ? <UserCog className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+                                                    {sale.cashier_id.includes('owner') ? t('login.owner') : t('login.cashier')}
+                                                </span>
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-foreground tabular-nums">${sale.total.toFixed(2)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-sage-700 dark:text-sage-300 tabular-nums">${sale.amount_received.toFixed(2)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-muted-foreground tabular-nums">${sale.change_given.toFixed(2)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}

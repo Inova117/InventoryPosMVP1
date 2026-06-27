@@ -1,67 +1,65 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { DailySalesData } from '@/lib/services/analytics';
+import { useT } from '@/components/providers/language-provider';
 
 interface SalesChartProps {
     data: DailySalesData[];
 }
 
+interface ChartTooltipProps {
+    active?: boolean;
+    payload?: { value?: number }[];
+    label?: string;
+}
+
+const SAGE = '#7B896F';
+
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
+    if (!active || !payload || !payload.length) return null;
+    const value = payload[0]?.value;
+    return (
+        <div className="rounded-xl border border-border bg-card px-3 py-2 elevation-3">
+            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="font-serif text-base font-semibold text-foreground">
+                ${typeof value === 'number' ? value.toFixed(2) : '0.00'}
+            </p>
+        </div>
+    );
+}
+
 export function SalesChart({ data }: SalesChartProps) {
-    // Format date for display (MM/DD)
+    const { lang } = useT();
+    const locale = lang === 'es' ? 'es-MX' : 'en-US';
+
     const formattedData = data.map((item) => ({
         ...item,
-        displayDate: new Date(item.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-        }),
+        displayDate: new Date(item.date).toLocaleDateString(locale, { month: 'short', day: 'numeric' }),
     }));
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                Sales Trend (Last 7 Days)
-            </h2>
-
-            <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={formattedData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis
-                        dataKey="displayDate"
-                        stroke="#64748b"
-                        style={{ fontSize: '12px' }}
-                    />
-                    <YAxis
-                        stroke="#64748b"
-                        style={{ fontSize: '12px' }}
-                        tickFormatter={(value) => `$${value}`}
-                    />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#ffffff',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px',
-                        }}
-                        formatter={(value) => {
-                            if (typeof value === 'number') return `$${value.toFixed(2)}`;
-                            return 'N/A';
-                        }}
-                        labelFormatter={(label) => `Date: ${label}`}
-                    />
-                    <Line
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="#3b82f6"
-                        strokeWidth={2}
-                        dot={{ fill: '#3b82f6' }}
-                        activeDot={{ r: 6 }}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
-
-            <div className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-                Revenue generated over the past 7 days
-            </div>
-        </div>
+        <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={formattedData} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
+                <defs>
+                    <linearGradient id="sageGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={SAGE} stopOpacity={0.28} />
+                        <stop offset="100%" stopColor={SAGE} stopOpacity={0} />
+                    </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-warmth-200 dark:text-warmth-700" vertical={false} />
+                <XAxis dataKey="displayDate" stroke="currentColor" className="text-warmth-400" tickLine={false} axisLine={false} style={{ fontSize: '12px' }} />
+                <YAxis stroke="currentColor" className="text-warmth-400" tickLine={false} axisLine={false} style={{ fontSize: '12px' }} tickFormatter={(value) => `$${value}`} />
+                <Tooltip content={<ChartTooltip />} cursor={{ stroke: SAGE, strokeOpacity: 0.3 }} />
+                <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke={SAGE}
+                    strokeWidth={2.5}
+                    fill="url(#sageGradient)"
+                    activeDot={{ r: 5, fill: SAGE }}
+                />
+            </AreaChart>
+        </ResponsiveContainer>
     );
 }

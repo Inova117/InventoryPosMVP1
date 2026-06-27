@@ -61,8 +61,8 @@ module.exports = {
         ring: 'rgb(var(--ring) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        serif: ['Crimson Pro', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {

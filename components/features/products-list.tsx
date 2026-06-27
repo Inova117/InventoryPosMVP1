@@ -1,7 +1,10 @@
 'use client';
 
+import { Pencil, Trash2, PackageOpen } from 'lucide-react';
 import type { Product } from '@/types/mock';
+import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface ProductsListProps {
     products: Product[];
@@ -10,89 +13,60 @@ interface ProductsListProps {
 }
 
 export function ProductsList({ products, onEdit, onDelete }: ProductsListProps) {
+    const { t } = useT();
+
     if (products.length === 0) {
         return (
-            <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                <p className="text-slate-500 dark:text-slate-400">No products found. Create your first product to get started.</p>
+            <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-12 text-center elevation-1">
+                <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                    <PackageOpen className="h-7 w-7" />
+                </span>
+                <h3 className="font-medium text-foreground">{t('inventory.noProducts')}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{t('inventory.noProductsDesc')}</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card elevation-1">
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                    <thead className="bg-slate-50 dark:bg-slate-900">
+                <table className="min-w-full divide-y divide-border">
+                    <thead className="bg-muted/50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                SKU
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Category
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Stock
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Buy Price
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Sell Price
-                            </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Actions
-                            </th>
+                            {[t('inventory.sku'), t('inventory.name'), t('inventory.category'), t('inventory.stock'), t('inventory.buyPrice'), t('inventory.sellPrice')].map((h) => (
+                                <th key={h} className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">{h}</th>
+                            ))}
+                            <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('inventory.actions')}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tbody className="divide-y divide-border">
                         {products.map((product) => (
-                            <tr key={product.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">
-                                    {product.sku}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100">
-                                    {product.name}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                                    {product.category}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.stock < 10
-                                                ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                                                : product.stock < 50
-                                                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                                    : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                            }`}
-                                    >
+                            <tr key={product.id} className="transition-colors hover:bg-muted/40">
+                                <td className="whitespace-nowrap px-6 py-4 font-mono text-sm font-medium text-foreground">{product.sku}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-foreground">{product.name}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">{product.category}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm">
+                                    <Badge variant={product.stock < 10 ? 'danger' : product.stock < 50 ? 'warning' : 'success'}>
                                         {product.stock}
-                                    </span>
+                                    </Badge>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                                    ${product.buy_price.toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100 font-medium">
-                                    ${product.sell_price.toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => onEdit(product)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => onDelete(product.id)}
-                                        className="text-red-600 hover:text-red-900 dark:text-red-400"
-                                    >
-                                        Delete
-                                    </Button>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground tabular-nums">${product.buy_price.toFixed(2)}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground tabular-nums">${product.sell_price.toFixed(2)}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                    <div className="flex justify-end gap-1">
+                                        <Button variant="ghost" size="icon" aria-label={t('common.edit')} onClick={() => onEdit(product)}>
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label={t('common.delete')}
+                                            onClick={() => onDelete(product.id)}
+                                            className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

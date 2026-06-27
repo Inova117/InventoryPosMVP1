@@ -2,11 +2,11 @@
 
 export function DataFlowDiagram() {
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Data Flow & Architecture</h2>
+        <div className="bg-card rounded-2xl elevation-1 border border-border p-8">
+            <h2 className="text-2xl font-serif font-semibold text-foreground mb-6">Data Flow & Architecture</h2>
 
             {/* Mermaid Diagram */}
-            <div className="mermaid bg-slate-50 rounded-lg p-6 border border-slate-200 mb-6">
+            <div className="mermaid bg-muted rounded-xl p-6 border border-border mb-6">
                 {`graph TB
     subgraph Client["🖥️ Client Layer"]
         UI["React Components"]
@@ -64,21 +64,21 @@ export function DataFlowDiagram() {
 
             {/* Flow Description */}
             <div className="grid md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <h3 className="font-semibold text-blue-900 mb-2">1. UI Layer</h3>
-                    <p className="text-sm text-blue-800">
+                <div className="bg-sage-50 rounded-xl p-4 border border-sage-200 dark:bg-sage-900/20 dark:border-sage-900/30">
+                    <h3 className="font-semibold text-sage-700 dark:text-sage-300 mb-2">1. UI Layer</h3>
+                    <p className="text-sm text-sage-700 dark:text-sage-300">
                         React components call service methods for business logic
                     </p>
                 </div>
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <h3 className="font-semibold text-green-900 mb-2">2. Services</h3>
-                    <p className="text-sm text-green-800">
+                <div className="bg-green-50 rounded-xl p-4 border border-green-200 dark:bg-green-900/20 dark:border-green-900/30">
+                    <h3 className="font-semibold text-green-900 dark:text-green-300 mb-2">2. Services</h3>
+                    <p className="text-sm text-green-800 dark:text-green-300">
                         Abstracted business logic, validations, and mock DB interaction
                     </p>
                 </div>
-                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                    <h3 className="font-semibold text-yellow-900 mb-2">3. Persistence</h3>
-                    <p className="text-sm text-yellow-800">
+                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-900/30">
+                    <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">3. Persistence</h3>
+                    <p className="text-sm text-yellow-800 dark:text-yellow-300">
                         Mock DB saves to LocalStorage with 600ms simulated latency
                     </p>
                 </div>

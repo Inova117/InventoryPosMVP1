@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import warm, editorial fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
+/* Fonts (Inter + Crimson Pro) are loaded via next/font in app/layout.tsx */
 
 @layer base {
   :root {
@@ -39,13 +38,14 @@
     --foreground: var(--warmth-900);
     --card: 255 255 255;
     --card-foreground: var(--warmth-900);
-    --primary: var(--sage-primary);
+    --primary: var(--sage-dark);
+    /* sage-dark for WCAG AA contrast on white text */
     --primary-foreground: 255 255 255;
     --secondary: var(--warmth-200);
     --secondary-foreground: var(--warmth-900);
     --muted: var(--warmth-100);
     --muted-foreground: var(--warmth-600);
-    --accent: var(--sage-primary);
+    --accent: var(--sage-dark);
     --accent-foreground: 255 255 255;
     --border: var(--warmth-200);
     --input: var(--warmth-200);
@@ -80,8 +80,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -93,7 +92,7 @@
   h4,
   h5,
   h6 {
-    font-family: 'Crimson Pro', Georgia, serif;
+    @apply font-serif;
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -214,17 +213,5 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgb(var(--sage-primary) / 0.5);
-  }
-}
-
-
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans;
   }
 }

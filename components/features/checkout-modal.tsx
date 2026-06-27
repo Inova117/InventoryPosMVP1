@@ -1,24 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useT } from '@/components/providers/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 
 interface CheckoutModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     total: number;
     onComplete: (amountReceived: number) => Promise<void>;
-    onCancel: () => void;
 }
 
-export function CheckoutModal({
-    total,
-    onComplete,
-    onCancel,
-}: CheckoutModalProps) {
+export function CheckoutModal({ open, onOpenChange, total, onComplete }: CheckoutModalProps) {
+    const { t } = useT();
     const [amountReceived, setAmountReceived] = useState(total);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState('');
+
+    // Reset the input each time the modal opens
+    useEffect(() => {
+        if (open) {
+            setAmountReceived(total);
+            setError('');
+            setIsProcessing(false);
+        }
+    }, [open, total]);
 
     const change = amountReceived - total;
     const isValidPayment = amountReceived >= total;
@@ -26,35 +41,31 @@ export function CheckoutModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!isValidPayment) return;
-
         setIsProcessing(true);
         setError('');
-
         try {
             await onComplete(amountReceived);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Payment failed');
+            setError(err instanceof Error ? err.message : t('checkout.insufficient'));
             setIsProcessing(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-lg max-w-md w-full p-6 shadow-xl">
-                <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100">
-                    Complete Sale
-                </h2>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{t('checkout.title')}</DialogTitle>
+                </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <Label>Total Amount</Label>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-slate-100 py-2">
-                            ${total.toFixed(2)}
-                        </div>
+                    <div className="rounded-xl bg-muted p-4">
+                        <p className="text-sm text-muted-foreground">{t('checkout.totalToPay')}</p>
+                        <p className="font-serif text-3xl font-semibold text-foreground">${total.toFixed(2)}</p>
                     </div>
 
-                    <div>
-                        <Label htmlFor="amount_received">Amount Received</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="amount_received">{t('checkout.amountReceived')}</Label>
                         <Input
                             id="amount_received"
                             type="number"
@@ -62,48 +73,40 @@ export function CheckoutModal({
                             min={total}
                             value={amountReceived}
                             onChange={(e) => setAmountReceived(parseFloat(e.target.value) || 0)}
-                            className="text-lg"
+                            className="h-12 text-lg"
                             autoFocus
                         />
                     </div>
 
                     {isValidPayment && change > 0 && (
-                        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                            <Label className="text-green-800 dark:text-green-400">
-                                Change to Return
-                            </Label>
-                            <div className="text-2xl font-bold text-green-900 dark:text-green-300">
-                                ${change.toFixed(2)}
-                            </div>
+                        <div className="rounded-xl border border-sage-200 bg-sage-50 p-4 dark:border-sage-900/30 dark:bg-sage-900/20">
+                            <p className="text-sm font-medium text-sage-700 dark:text-sage-300">{t('checkout.change')}</p>
+                            <p className="font-serif text-2xl font-semibold text-sage-800 dark:text-sage-200">${change.toFixed(2)}</p>
                         </div>
                     )}
 
                     {!isValidPayment && (
-                        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded text-red-800 dark:text-red-400 text-sm">
-                            Amount received must be at least ${total.toFixed(2)}
+                        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                            {t('checkout.insufficient')}
                         </div>
                     )}
 
                     {error && (
-                        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded text-red-800 dark:text-red-400 text-sm">
+                        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
                             {error}
                         </div>
                     )}
 
-                    <div className="flex gap-3 pt-2">
-                        <Button
-                            type="submit"
-                            disabled={!isValidPayment || isProcessing}
-                            className="flex-1"
-                        >
-                            {isProcessing ? 'Processing...' : 'Complete Sale'}
+                    <DialogFooter className="pt-2">
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                            {t('common.cancel')}
                         </Button>
-                        <Button type="button" variant="outline" onClick={onCancel}>
-                            Cancel
+                        <Button type="submit" disabled={!isValidPayment || isProcessing} className="flex-1">
+                            {isProcessing ? t('checkout.processing') : t('checkout.complete')}
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }

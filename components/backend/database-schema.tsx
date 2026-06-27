@@ -1,87 +1,117 @@
 // Database Schema for MVP #1 - Inventory POS
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Database, ShieldCheck } from 'lucide-react'
+import { mockDb } from '@/lib/mock-db'
+
+type TableName = 'stores' | 'products' | 'sales' | 'sale_items'
 
 export function DatabaseSchema() {
     const [selectedTable, setSelectedTable] = useState<string | null>(null)
+    const [counts, setCounts] = useState<Record<TableName, number> | null>(null)
 
-    const tables = [
+    useEffect(() => {
+        let active = true
+        const load = async () => {
+            const [stores, products, sales, saleItems] = await Promise.all([
+                mockDb.getTable('stores'),
+                mockDb.getTable('products'),
+                mockDb.getTable('sales'),
+                mockDb.getTable('sale_items'),
+            ])
+            if (active) {
+                setCounts({
+                    stores: stores.length,
+                    products: products.length,
+                    sales: sales.length,
+                    sale_items: saleItems.length,
+                })
+            }
+        }
+        load()
+        return () => {
+            active = false
+        }
+    }, [])
+
+    const countLabel = (name: TableName) => {
+        if (!counts) return '…'
+        // eslint-disable-next-line security/detect-object-injection
+        const n = counts[name]
+        return `${n} ${n === 1 ? 'registro' : 'registros'}`
+    }
+    const totalRecords = counts ? counts.stores + counts.products + counts.sales + counts.sale_items : null
+
+    const tables: { name: TableName; description: string; columns: { name: string; type: string; pk?: boolean; fk?: string; description: string }[]; rls: string }[] = [
         {
             name: 'stores',
-            description: 'Store locations and settings',
+            description: 'Tiendas y su configuración',
             columns: [
-                { name: 'id', type: 'uuid', pk: true, description: 'Unique identifier' },
-                { name: 'user_id', type: 'uuid', fk: 'auth.users', description: 'Store owner' },
-                { name: 'name', type: 'text', description: 'Store name' },
-                { name: 'address', type: 'text', description: 'Physical address' },
-                { name: 'created_at', type: 'timestamptz', description: 'Creation timestamp' }
+                { name: 'id', type: 'uuid', pk: true, description: 'Identificador único' },
+                { name: 'user_id', type: 'uuid', fk: 'auth.users', description: 'Dueño de la tienda' },
+                { name: 'name', type: 'text', description: 'Nombre de la tienda' },
+                { name: 'address', type: 'text', description: 'Dirección' },
+                { name: 'created_at', type: 'timestamptz', description: 'Fecha de creación' }
             ],
-            rls: 'Users manage their own stores',
-            count: '1 record (demo)'
+            rls: 'Cada usuario gestiona sus tiendas',
         },
         {
             name: 'products',
-            description: 'Product inventory catalog',
+            description: 'Catálogo de inventario',
             columns: [
-                { name: 'id', type: 'uuid', pk: true, description: 'Unique identifier' },
-                { name: 'store_id', type: 'uuid', fk: 'stores', description: 'Parent store' },
-                { name: 'name', type: 'text', description: 'Product name' },
-                { name: 'sku', type: 'text', description: 'Stock keeping unit' },
-                { name: 'category', type: 'text', description: 'Product category' },
-                { name: 'buy_price', type: 'numeric', description: 'Purchase cost' },
-                { name: 'sell_price', type: 'numeric', description: 'Retail price' },
-                { name: 'stock', type: 'integer', description: 'Current quantity' },
-                { name: 'min_stock', type: 'integer', description: 'Alert threshold' }
+                { name: 'id', type: 'uuid', pk: true, description: 'Identificador único' },
+                { name: 'store_id', type: 'uuid', fk: 'stores', description: 'Tienda dueña' },
+                { name: 'name', type: 'text', description: 'Nombre del producto' },
+                { name: 'sku', type: 'text', description: 'Código SKU' },
+                { name: 'category', type: 'text', description: 'Categoría' },
+                { name: 'buy_price', type: 'numeric', description: 'Costo de compra' },
+                { name: 'sell_price', type: 'numeric', description: 'Precio de venta' },
+                { name: 'stock', type: 'integer', description: 'Cantidad actual' }
             ],
-            rls: 'Store-scoped access only',
-            count: '50 records (demo)'
+            rls: 'Acceso por tienda',
         },
         {
             name: 'sales',
-            description: 'Transaction records',
+            description: 'Registro de transacciones',
             columns: [
-                { name: 'id', type: 'uuid', pk: true, description: 'Unique identifier' },
-                { name: 'store_id', type: 'uuid', fk: 'stores', description: 'Transaction store' },
-                { name: 'total_amount', type: 'numeric', description: 'Total sale value' },
-                { name: 'payment_method', type: 'text', description: 'Cash, card, etc' },
-                { name: 'created_at', type: 'timestamptz', description: 'Sale timestamp' }
+                { name: 'id', type: 'uuid', pk: true, description: 'Identificador único' },
+                { name: 'store_id', type: 'uuid', fk: 'stores', description: 'Tienda de la venta' },
+                { name: 'total', type: 'numeric', description: 'Valor total' },
+                { name: 'amount_received', type: 'numeric', description: 'Monto recibido' },
+                { name: 'change_given', type: 'numeric', description: 'Cambio entregado' },
+                { name: 'created_at', type: 'timestamptz', description: 'Fecha de la venta' }
             ],
-            rls: 'Store-scoped transactions',
-            count: '100 records (demo)'
+            rls: 'Transacciones por tienda',
         },
         {
             name: 'sale_items',
-            description: 'Individual items sold',
+            description: 'Detalle de cada venta',
             columns: [
-                { name: 'id', type: 'uuid', pk: true, description: 'Unique identifier' },
-                { name: 'sale_id', type: 'uuid', fk: 'sales', description: 'Parent sale' },
-                { name: 'product_id', type: 'uuid', fk: 'products', description: 'Product sold' },
-                { name: 'quantity', type: 'integer', description: 'Units sold' },
-                { name: 'unit_price', type: 'numeric', description: 'Price per unit' },
-                { name: 'subtotal', type: 'numeric', description: 'Line total' }
+                { name: 'id', type: 'uuid', pk: true, description: 'Identificador único' },
+                { name: 'sale_id', type: 'uuid', fk: 'sales', description: 'Venta padre' },
+                { name: 'product_id', type: 'uuid', fk: 'products', description: 'Producto vendido' },
+                { name: 'quantity', type: 'integer', description: 'Unidades' },
+                { name: 'unit_price', type: 'numeric', description: 'Precio unitario' },
+                { name: 'subtotal', type: 'numeric', description: 'Total de línea' }
             ],
-            rls: 'Inherits sale permissions',
-            count: '200+ records (demo)'
+            rls: 'Hereda permisos de la venta',
         }
     ]
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 p-8">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                    </svg>
-                </div>
+        <div className="rounded-2xl border border-border bg-card p-8 elevation-1">
+            <div className="mb-6 flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sage-100 text-sage-700 dark:bg-sage-900/30 dark:text-sage-300">
+                    <Database className="h-6 w-6" />
+                </span>
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Database Schema</h2>
-                    <p className="text-slate-600">PostgreSQL with Row Level Security for multi-tenancy</p>
+                    <h2 className="font-serif text-2xl font-semibold text-foreground">Esquema de base de datos</h2>
+                    <p className="text-muted-foreground">PostgreSQL con Row Level Security para multi-tenant</p>
                 </div>
             </div>
 
-            {/* ERD Diagram */}
-            <div className="bg-slate-50 rounded-lg p-6 mb-6">
+            <div className="mb-6 rounded-xl bg-muted p-6">
                 <div className="mermaid">
                     {`erDiagram
     USERS ||--o{ STORES : owns
@@ -89,106 +119,89 @@ export function DatabaseSchema() {
     STORES ||--o{ SALES : processes
     SALES ||--o{ SALE_ITEMS : includes
     PRODUCTS ||--o{ SALE_ITEMS : sold_in
-    
+
     STORES {
         uuid id PK
         uuid user_id FK
         text name
         text address
     }
-    
+
     PRODUCTS {
         uuid id PK
         uuid store_id FK
         text name
         text sku
-        text category
-        numeric buy_price
-        numeric sell_price
         integer stock
-        integer min_stock
     }
-    
+
     SALES {
         uuid id PK
         uuid store_id FK
-        numeric total_amount
-        text payment_method
+        numeric total
         timestamptz created_at
     }
-    
+
     SALE_ITEMS {
         uuid id PK
         uuid sale_id FK
         uuid product_id FK
         integer quantity
-        numeric unit_price
         numeric subtotal
     }`}
                 </div>
             </div>
 
-            {/* Tables Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 {tables.map((table) => (
                     <button
                         key={table.name}
                         onClick={() => setSelectedTable(selectedTable === table.name ? null : table.name)}
-                        className={`text-left p-4 rounded-lg border-2 transition ${selectedTable === table.name
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
-                            }`}
+                        className={`rounded-xl border-2 p-4 text-left transition ${
+                            selectedTable === table.name ? 'border-sage-500 bg-sage-50 dark:bg-sage-900/20' : 'border-border hover:border-sage-300'
+                        }`}
                     >
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-slate-900">{table.name}</h3>
-                            <span className="text-xs text-slate-500">{table.count}</span>
+                        <div className="mb-2 flex items-center justify-between">
+                            <h3 className="font-mono font-semibold text-foreground">{table.name}</h3>
+                            <span className="text-xs text-muted-foreground">{countLabel(table.name)}</span>
                         </div>
-                        <p className="text-sm text-slate-600">{table.description}</p>
-                        <div className="mt-2 flex items-center gap-2 text-xs text-green-600">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                            </svg>
-                            <span>RLS Protected</span>
+                        <p className="text-sm text-muted-foreground">{table.description}</p>
+                        <div className="mt-2 flex items-center gap-1.5 text-xs text-sage-600 dark:text-sage-400">
+                            <ShieldCheck className="h-4 w-4" />
+                            <span>RLS</span>
                         </div>
                     </button>
                 ))}
             </div>
 
-            {/* Table Details */}
             {selectedTable && (
-                <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <div className="rounded-xl border border-border bg-muted p-6">
                     {tables.map((table) => (
                         selectedTable === table.name && (
                             <div key={table.name}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-semibold text-slate-900">
-                                        Table: {table.name}
-                                    </h3>
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-medium">
-                                        {table.rls}
-                                    </span>
+                                <div className="mb-4 flex items-center justify-between gap-3">
+                                    <h3 className="font-mono text-lg font-semibold text-foreground">{table.name}</h3>
+                                    <span className="rounded-full bg-sage-100 px-3 py-1 text-sm font-medium text-sage-700 dark:bg-sage-900/30 dark:text-sage-300">{table.rls}</span>
                                 </div>
-
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-slate-200">
-                                        <thead className="bg-white">
+                                    <table className="min-w-full divide-y divide-border">
+                                        <thead>
                                             <tr>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Column</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Type</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Constraints</th>
-                                                <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Description</th>
+                                                {['Columna', 'Tipo', 'Llaves', 'Descripción'].map((h) => (
+                                                    <th key={h} className="px-4 py-2 text-left text-xs font-medium uppercase text-muted-foreground">{h}</th>
+                                                ))}
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-slate-200">
+                                        <tbody className="divide-y divide-border">
                                             {table.columns.map((column) => (
                                                 <tr key={column.name}>
-                                                    <td className="px-4 py-2 text-sm font-mono text-slate-900">{column.name}</td>
-                                                    <td className="px-4 py-2 text-sm text-slate-600">{column.type}</td>
+                                                    <td className="px-4 py-2 font-mono text-sm text-foreground">{column.name}</td>
+                                                    <td className="px-4 py-2 text-sm text-muted-foreground">{column.type}</td>
                                                     <td className="px-4 py-2 text-sm">
-                                                        {column.pk && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded mr-1">PK</span>}
-                                                        {column.fk && <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">FK → {column.fk}</span>}
+                                                        {column.pk && <span className="mr-1 rounded bg-terracotta/15 px-2 py-1 text-xs text-terracotta-dark">PK</span>}
+                                                        {column.fk && <span className="rounded bg-sage-100 px-2 py-1 text-xs text-sage-700 dark:bg-sage-900/30 dark:text-sage-300">FK → {column.fk}</span>}
                                                     </td>
-                                                    <td className="px-4 py-2 text-sm text-slate-600">{column.description}</td>
+                                                    <td className="px-4 py-2 text-sm text-muted-foreground">{column.description}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -200,19 +213,18 @@ export function DatabaseSchema() {
                 </div>
             )}
 
-            {/* Stats */}
-            <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4">
+            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6">
                 <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">4</div>
-                    <div className="text-sm text-slate-600">Tables</div>
+                    <div className="font-serif text-2xl font-semibold text-foreground">{tables.length}</div>
+                    <div className="text-sm text-muted-foreground">Tablas</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">100%</div>
-                    <div className="text-sm text-slate-600">RLS Coverage</div>
+                    <div className="font-serif text-2xl font-semibold text-foreground">100%</div>
+                    <div className="text-sm text-muted-foreground">Cobertura RLS</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">350+</div>
-                    <div className="text-sm text-slate-600">Demo Records</div>
+                    <div className="font-serif text-2xl font-semibold text-foreground">{totalRecords ?? '…'}</div>
+                    <div className="text-sm text-muted-foreground">Registros demo</div>
                 </div>
             </div>
         </div>
